@@ -3,7 +3,7 @@ name = "examination-project-de24"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 dependencies = [
     "dagster>=1.12.3",
     "dagster-dbt>=0.28.3",
@@ -14,5 +14,6 @@ dependencies = [
     "duckdb>=1.4.2",
     "ipykernel>=7.1.0",
     "pandas>=2.2.2",
+    "python-dotenv>=1.0.1",
     "taipy>=4.1.0",
 ]
