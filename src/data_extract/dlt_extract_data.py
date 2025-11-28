@@ -5,7 +5,7 @@ import dlt
 from pathlib import Path
 
 
-path_duckdb = str(Path(__file__).parents[1]/"data_warehouse/nobil_dump.duckdb")
+path_duckdb = str(Path(__file__).parents[1]/"data_warehouse/data.duckdb")
 
 def _get_url():
     
