@@ -1,0 +1,15 @@
+
+target/
+dbt_packages/
+logs/
+
+
+# dlt
+**/.dlt/
+ 
+HR_agency.egg-info
+ 
+ 
+# duckdb
+*.wal
+*.duckdb
