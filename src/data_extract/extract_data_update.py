@@ -1,5 +1,5 @@
 import requests
-from constans.utils import API_KEY_NOBIL
+from constants.utils import API_KEY_NOBIL, DATE_NOW
 import sys
 import dlt
 from pathlib import Path
@@ -17,6 +17,7 @@ def _get_url():
         "countrycode": "SWE",
         "format": "json",
         "file": "false",
+        "fromdate": DATE_NOW
     }
 
     url = "https://nobil.no/api/server/datadump.php"
@@ -50,7 +51,7 @@ def _get_catched_data():
     return _catched_data
 
 
-@dlt.resource(write_disposition="replace", name= "csmd_table_dump")
+@dlt.resource(write_disposition="replace", name= "csmd_table_update")
 def csmd_data():
 
     data = _get_catched_data()
@@ -67,7 +68,7 @@ def csmd_data():
         yield station["csmd"]
 
 
-@dlt.resource(write_disposition="replace", name="status_online_table_dump")
+@dlt.resource(write_disposition="replace", name="status_online_table_update")
 def status_online_data():
 
     data = _get_catched_data()
@@ -99,7 +100,7 @@ def status_online_data():
             }
         
         
-@dlt.resource(write_disposition="replace", name="connector_table_dump")
+@dlt.resource(write_disposition="replace", name="connector_table_update")
 def connector_data():
 
     data = _get_catched_data()
