@@ -1,0 +1,16 @@
+sources:
+  - name: chargerstation  
+    schema: staging         
+    tables:
+      - name: csmd_dump
+        identifier: csmd_table_dump
+      - name: st_dump
+        identifier: status_online_table_dump
+      - name: conn_dump
+        identifier: connector_table_dump
+      - name: csmd_update
+        identifier: csmd_table_update
+      - name: st_update
+        identifier: status_online_table_update
+      - name: conn_update
+        identifier: connector_table_update
