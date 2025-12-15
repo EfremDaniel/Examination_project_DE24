@@ -1,6 +1,7 @@
 sources:
   - name: chargerstation  
-    schema: staging         
+    database: data
+    schema: staging       
     tables:
       - name: csmd_dump
         identifier: csmd_table_dump

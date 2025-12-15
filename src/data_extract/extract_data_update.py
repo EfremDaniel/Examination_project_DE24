@@ -83,7 +83,8 @@ def status_online_data():
     print("Start yield for pipeline")
     for station in batch:
 
-        station_id = station["csmd"]["id"]
+        station_id = station["csmd"].get("id")
+        update_date = station["csmd"]["Updated"]
         st_dict = station["attr"]["st"]
         
         
@@ -91,6 +92,7 @@ def status_online_data():
 
             yield {
                 "station_id": station_id,
+                "updated_date": update_date,
                 "attr_key": key,
                 "attrtypeid": attr.get("attrtypeid"),
                 "attrname": attr.get("attrname"),
@@ -116,6 +118,7 @@ def connector_data():
     for station in batch:
         
         station_id = station["csmd"].get("id")
+        update_date = station["csmd"]["Updated"]
         data_conn = station["attr"]["conn"]
         
         for connector in data_conn.keys():
@@ -124,6 +127,7 @@ def connector_data():
             for key in data_attribute.keys():
                 yield {
                     "station_id": station_id,
+                    "updated_date": update_date,
                     "connector_nr": connector,
                     "attrtypeid": data_conn[connector][key].get("attrtypeid"),
                     "attrname": data_conn[connector][key].get("attrname"),
