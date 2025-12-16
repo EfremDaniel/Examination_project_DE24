@@ -100,7 +100,6 @@ def status_online_data():
                 'attrval': attr.get("attrval")
             }
         
-        
 @dlt.resource(write_disposition="replace", name="connector_table_dump")
 def connector_data():
 
@@ -134,7 +133,6 @@ def connector_data():
                     "trans": data_conn[connector][key].get("trans"),
                     "attrval": data_conn[connector][key].get("attrval")
                 }
-
 
 def run_pipeline():
     pipeline = dlt.pipeline(
