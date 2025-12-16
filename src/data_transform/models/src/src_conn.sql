@@ -39,4 +39,4 @@ final_table as (
     select * from updates
 )
 
-select * from final_table;
+select * from final_table

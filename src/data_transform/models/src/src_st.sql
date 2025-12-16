@@ -12,7 +12,8 @@ st_dump_filter as (
     station_id,
     attrname,
     attrtypeid,
-    attrvalid
+    attrvalid,
+    trans
     from st_dump as ad
     where not exists(
         select 1
@@ -26,7 +27,8 @@ updates as (
     station_id,
     attrname,
     attrtypeid,
-    attrvalid
+    attrvalid,
+    trans
 from st_update_debup sud
 ),
 
@@ -35,4 +37,4 @@ final_table as (
     union 
     select * from updates
 )
-select * from final_table;
+select * from final_table
