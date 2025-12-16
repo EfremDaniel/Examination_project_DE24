@@ -15,3 +15,9 @@ sources:
         identifier: status_online_table_update
       - name: conn_update
         identifier: connector_table_update
+  - name: trafikanalys
+    database: data
+    schema: staging
+    tables:
+      - name: trafik_analys
+        identifier: trafikanalys
