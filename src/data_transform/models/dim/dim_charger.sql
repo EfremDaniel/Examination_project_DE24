@@ -4,8 +4,8 @@ with csmd as (select * from {{ ref('src_csmd') }}),
 
 select
     {{ dbt_utils.generate_surrogate_key(['csmd.id', 'st.attrname', 'conn.attrname']) }} as charger_id,
-    max(csmd.owned_by),
-    max(csmd.operator),
+    max(csmd.owned_by) as owned_by,
+    max(csmd.operator) as operator,
     st.attrname as parking_type,
     max(st.trans) as parking_info,
     max(cast(csmd.updated as date)) as update_date,
