@@ -6,14 +6,17 @@ import pandas as pd
 
 db_path = str(Path(__file__).parents[1] /"data_warehouse/data.duckdb")
 
+
 def transform_excel_json(file, sheet_name):
-    
+
     df = pd.read_excel(path/file, sheet_name= sheet_name)
-    
+
+    df = df.reset_index().rename({"index": "id"}, axis=1)
+    df["id"] = df["id"].apply(lambda x: x+1)
+
     data = df.to_dict(orient= "records")
-    
+
     return data
-    
 
 @dlt.resource(write_disposition="replace", name= "trafikanalys")  
 def load_trafikanalys(file, sheet_name):
