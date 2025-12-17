@@ -5,7 +5,9 @@ select
     id,
     AR as 'year',
     Drivmedel as fuel,
-    antal_i_trafik as car_in_traffic 
+    antal_i_trafik as car_in_traffic,
+    l_n as county,
+    kommun as municipality
 from tr
 where 
     AR between 2016 and 2024
