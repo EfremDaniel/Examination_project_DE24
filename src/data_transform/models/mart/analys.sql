@@ -5,7 +5,7 @@ locations as (select * from {{ ref('dim_location') }})
 select
     c.operator,
     c.owned_by,
-    c.updated_date,
+    c.update_date,
     c.parking_type,
     c.parking_info,
     c.connector_type,
@@ -21,4 +21,4 @@ select
 from 
     fact f
 left join charger c on f.charger_id = c.charger_id
-left join locations l on f.locations_id = l.locations_id
+left join locations l on f.location_id = l.location_id
