@@ -6,7 +6,7 @@ geo as (select * from {{ ref('dim_geo') }})
 select
     c.operator,
     c.owned_by,
-    c.update_date,
+    fc.update_date,
     c.parking_type,
     c.parking_info,
     c.connector_type,

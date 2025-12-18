@@ -22,7 +22,8 @@ dump_filter as (
         cd.number_charging_points,
         cd.available_charging_points,
         cd.house_number,
-        cd.updated
+        cd.updated,
+        cd.created
     from csmd_dump cd
     where not exists (
     select 1
@@ -46,7 +47,8 @@ updates as (
         cud.number_charging_points,
         cud.available_charging_points,
         cud.house_number,
-        cud.updated
+        cud.updated,
+        cud.created
     from csmd_update_dedup cud 
 ),
 final_table as (
@@ -56,5 +58,6 @@ final_table as (
 )
 
 select * from final_table
-
+where Upper(municipality) not in ('RINSTED', 'GENTOFTE', 'HILLERØD', 'KOLDING', 'FURESØ', 'AABENRAA', 'BALLERUP', 'GLADSAXE')
+and lower(county) not in ('sjæland', 'hovestaden', 'syddanmark')
 
