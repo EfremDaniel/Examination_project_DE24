@@ -20,4 +20,3 @@ left join
 st on csmd.id = st.station_id
 left join
 conn on csmd.id = conn.station_id
-
