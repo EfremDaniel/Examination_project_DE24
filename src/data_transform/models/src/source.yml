@@ -29,11 +29,11 @@ sources:
         meta:
           dagster:
             asset_key: ['dlt_nobil_source_csmd']
-      - name:
+      - name: st
         meta:
           dagster:
             asset_key: ['dlt_nobil_source_status_online']
-      - name:
+      - name: conn
         meta:
           dagster:
             asset_key: ['dlt_nobil_source_connector']

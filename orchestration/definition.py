@@ -5,34 +5,19 @@
 # ==================== #
 
 from pathlib import Path
-import sys
 import dlt
 import dagster as dg
 
 from dagster_dlt import DagsterDltResource, dlt_assets
 from dagster_dbt import DbtCliResource, DbtProject, dbt_assets
+from data_extract.extract_data_update import nobil_source
 
-
-# ==================== #
-#                      #
-#   import dlt source  #
-#                      #
-# ==================== #
-
-# gör så att Dagster hittar ditt dlt-script
-sys.path.insert(0, "../data_extract_load")
-
-from load_nobil import nobil_source
-
-
-# ==================== #
-#                      #
-#     dlt resource     #
-#                      #
-# ==================== #
 
 # This create a Dagster resource
 dlt_resource = DagsterDltResource()
+
+
+
 
 
 # ==================== #
@@ -55,13 +40,16 @@ def dlt_load(context: dg.AssetExecutionContext,dlt: DagsterDltResource):
     yield from dlt.run(context=context)
 
 
+
+
+
 # ==================== #
 #                      #
 #      dbt assets      #
 #                      #
 # ==================== #
 
-dbt_project_dir = Path(__file__).parents[1] / "data_transform"
+dbt_project_dir = Path(__file__).parents[1] / "src" / "data_transform"
 profiles_dir = Path.home() / ".dbt"
 
 dbt_project = DbtProject(
@@ -76,11 +64,11 @@ dbt_project.prepare_if_dev()
 
 
 @dbt_assets(manifest=dbt_project.manifest_path)
-def dbt_models(
-    context: dg.AssetExecutionContext,
-    dbt: DbtCliResource,
-):
+def dbt_models(context: dg.AssetExecutionContext, dbt: DbtCliResource,):
     yield from dbt.cli(["build"], context=context).stream()
+
+
+
 
 
 # ==================== #
@@ -90,16 +78,20 @@ def dbt_models(
 # ==================== #
 
 # Run ALL dlt-assets from nobil_source
+# using key_prefixes() to have all of the assets_keys
 job_dlt = dg.define_asset_job(
     name="job_dlt",
     selection=dg.AssetSelection.key_prefixes("dlt_nobil_source"),
 )
 
-# kör alla dbt-modeller (justera prefix vid behov)
+# This will run all of the dbt-modells
 job_dbt = dg.define_asset_job(
     name="job_dbt",
     selection=dg.AssetSelection.all(),
 )
+
+
+
 
 
 # ==================== #
@@ -114,12 +106,16 @@ schedule_dlt = dg.ScheduleDefinition(
 )
 
 
+
+
+
 # ==================== #
 #                      #
 #        sensor        #
 #                      #
 # ==================== #
 
+# A sensor that will trigger when dlt job is materialized
 @dg.asset_sensor(
     asset_key=dg.AssetKey("dlt_nobil_source_csmd"),
     job_name="job_dbt",
@@ -128,29 +124,19 @@ def dlt_to_dbt_sensor():
     yield dg.RunRequest()
 
 
+
+
 # ==================== #
 #                      #
 #     definitions      #
 #                      #
 # ==================== #
 
+# Dagster object that contains the dbt assets and resource
 defs = dg.Definitions(
-    assets=[
-        dlt_load,
-        dbt_models,
-    ],
-    resources={
-        "dlt": dlt_resource,
-        "dbt": dbt_resource,
-    },
-    jobs=[
-        job_dlt,
-        job_dbt,
-    ],
-    schedules=[
-        schedule_dlt,
-    ],
-    sensors=[
-        dlt_to_dbt_sensor,
-    ],
+    assets=[dlt_load, dbt_models],
+    resources={ "dlt": dlt_resource, "dbt": dbt_resource},
+    jobs=[job_dlt, job_dbt],
+    schedules=[schedule_dlt],
+    sensors=[dlt_to_dbt_sensor]
 )
