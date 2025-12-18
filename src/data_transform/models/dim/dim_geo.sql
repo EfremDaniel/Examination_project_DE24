@@ -25,6 +25,3 @@ having n > 1
 order by n asc #}
 
 
-
-
-
