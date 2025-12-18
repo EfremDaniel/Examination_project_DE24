@@ -8,7 +8,6 @@ select
     max(csmd.operator) as operator,
     st.attrname as parking_type,
     max(st.trans) as parking_info,
-    max(cast(csmd.updated as date)) as update_date,
     conn.attrname as connector_type,
     max(conn.trans) as connector_info
 

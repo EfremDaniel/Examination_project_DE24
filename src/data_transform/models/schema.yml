@@ -1,0 +1,162 @@
+models:
+  - name: fact_charger
+    description: "Fact charger representing each public charging station"
+    columns:
+      - name: charger_id
+        description: "Foreign key from dim_charger"
+        data_tests: 
+          - relationships:
+              to: ref('dim_charger')
+              field: charger_id
+          
+
+      - name: area_id
+        description: "Foreign key from dim_area"
+        data_tests:
+          - relationships:
+              to: ref('dim_area')
+              field: area_id
+
+      - name: geo_id
+        description: "Foreign key from dim_geo"
+        data_tests:
+          - relationships:
+              to: ref('dim_geo')
+              field: geo_id
+
+      - name: number_charging_points
+        description: "integer"
+        data_tests:
+          - not_null
+
+      - name: available_charging_points
+        description: "integer"
+        data_tests:
+          - not_null
+
+      - name: update_date
+        description: "Date when updated data"
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: date
+
+      - name: created
+        description: "Date when charger was created in Nobil"
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: date
+
+      - name: status_type_id
+        description: "integer"
+        data_tests:
+          - not_null
+
+      - name: status_attr_valid
+        description: "integer"
+        data_tests:
+          - not_null
+
+      - name: connector_nr
+        description: "integer"
+        data_tests:
+          - not_null
+
+      - name: connector_type_id
+        description: "integer"
+        data_tests:
+          - not_null
+
+      - name: connector_attr_valid
+        description: "integer"
+        data_tests:
+          - not_null
+        
+  - name: fact_vehicle
+    description: "Fact vehicle representing amount of vehicles"
+    columns:
+      - name: vehicle_id
+        description: "Foreign key from dim_vehicle_in_traffic"
+        data_tests:
+          - relationships: 
+              to: ref('dim_vehicle_in_traffic')
+              field: vehicle_id
+
+      - name: geo_id
+        description: "Foreign key from dim_geo"
+        data_tests:
+          - relationships:
+              to: ref('dim_geo')
+              field: geo_id
+              
+
+      - name: year
+        descrioption: "int"
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: integer
+
+  - name: dim_area
+    description: "Dimension table to describe area for fact_charger"
+    columns:
+      - name: area_id
+        describe: "Primary key. A surrogate key consisting of id and street"
+        data_tests:
+          - unique
+          - not_null
+      - name: area
+        description: "varchar"
+      - name: house_number
+        description: "varchar"
+
+
+  - name: dim_charger
+    description: "Dimension table to describe charger for fact_charger"
+    columns:
+      - name: charger_id
+        description: "Primary key. A surrogate key consisting of csmd.id, st.attrname, conn.attrname"
+        data_tests:
+          - unique
+          - not_null
+      - name: owned_by
+        description: "varchar"
+      - name: operator
+        description: "varchar"
+      - name: parking_type
+        description: "varchar"
+      - name: parking_info
+        description: "varchar"
+      - name: connector_type
+        description: "varchar"
+      - name: connector_info
+        description: "varchar"
+
+  - name: dim_geo
+    description: "Dimension table to describe geological place for fact_charger and fact_vehicle"
+    columns:
+      - name: geo_id
+        description: "Primary key. A surrogate key consisting of municipality, county, id"
+        data_tests:
+          - unique
+          - not_null
+      - name: municipality_id
+        description: "varchar"
+      - name: municipality
+        description: "varchar"
+      - name: county_id
+        description: "varchar"
+      - name: county
+        description: "varchar"
+
+  - name: dim_vehicle_in_traffic
+    description: "Dimension table to describe numner of vehicle for fact_vehicle"
+    columns:
+      - name: vehicle_id
+        description: "Primary key. A surrogate key consisting of id and fuel"
+        data_tests:
+          - unique
+          - not_null
+      - name: vehicle_in_traffic
+        description: "int"
+      - name: fuel
+        deascription: "varchar"
