@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "dagster-webserver>=1.12.3",
     "dagster>=1.12.3",
     "dagster-dbt>=0.28.3",
     "dagster-dlt>=0.28.3",
