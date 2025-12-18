@@ -1,23 +1,21 @@
-import requests
-from constants.utils import API_KEY_NOBIL, DATE_NOW
-import sys
 import dlt
-from pathlib import Path
+import requests
+import sys
+from constants.utils import API_KEY_NOBIL, DATE_NOW
 
+dlt.config["load.truncate_staging_dataset"] = True
 
-path_duckdb = str(Path(__file__).parents[1] / "data_warehouse/data.duckdb")
 
 _catched_data = None
 
 
 def _get_url():
-
     params = {
         "apikey": API_KEY_NOBIL,
         "countrycode": "SWE",
         "format": "json",
         "file": "false",
-        "fromdate": DATE_NOW
+        "fromdate": DATE_NOW,
     }
 
     url = "https://nobil.no/api/server/datadump.php"
@@ -32,7 +30,7 @@ def _get_url():
     try:
         data = r.json()
     except Exception:
-        print("Svar kunde inte tolkas som JSON. Rätt svar:")
+        print("Svar kunde inte tolkas som JSON.")
         print(r.text[:800])
         sys.exit(1)
 
@@ -40,8 +38,7 @@ def _get_url():
         print("Ingen data returnerad.")
         sys.exit(0)
 
-    else:
-        return data
+    return data
 
 
 def _get_catched_data():
@@ -51,103 +48,80 @@ def _get_catched_data():
     return _catched_data
 
 
-@dlt.resource(write_disposition="replace", name= "csmd_table_update")
+
+@dlt.resource(table_name="csmd",write_disposition="replace")
 def csmd_data():
-
     data = _get_catched_data()
+   
+    stations = data.get("chargerstations", [])
 
-    batch = data.get("chargerstations", [])
-    print(f"DEBUG: antal stationer i chargerstations: {len(batch)= }")
-
-    if not batch:
-        print("DEBUG: No data - stopping processe")
+    if not stations:
         return
 
-    print("DEBUG: Start yield for pipeline")
-    for station in batch:
+    for station in stations:
         yield station["csmd"]
 
 
-@dlt.resource(write_disposition="replace", name="status_online_table_update")
+@dlt.resource(table_name="status_online", write_disposition="replace")
 def status_online_data():
-
+    
     data = _get_catched_data()
+    
+    stations = data.get("chargerstations", [])
 
-    batch = data.get("chargerstations", [])
-    print(f"DEBUG: antal stationer i chargerstations: {len(batch)= }")
-
-    if not batch:
-        print("DEBUG: No data - stopping processe")
+    if not stations:
         return
 
-    print("Start yield for pipeline")
-    for station in batch:
-
+    for station in stations:
         station_id = station["csmd"].get("id")
-        update_date = station["csmd"]["Updated"]
-        st_dict = station["attr"]["st"]
-        
-        
-        for key, attr in st_dict.items():
+        update_date = station["csmd"].get("Updated")
+        st_dict = station.get("attr", {}).get("st", {})
 
+        for key, attr in st_dict.items():
             yield {
                 "station_id": station_id,
                 "updated_date": update_date,
                 "attr_key": key,
                 "attrtypeid": attr.get("attrtypeid"),
                 "attrname": attr.get("attrname"),
-                'attrvalid': attr.get("attrvalid"),
-                'trans': attr.get("trans"),
-                'attrval': attr.get("attrval")
+                "attrvalid": attr.get("attrvalid"),
+                "trans": attr.get("trans"),
+                "attrval": attr.get("attrval"),
             }
-        
-        
-@dlt.resource(write_disposition="replace", name="connector_table_update")
+
+
+@dlt.resource(table_name="connector", write_disposition="replace")
 def connector_data():
-
     data = _get_catched_data()
+    stations = data.get("chargerstations", [])
 
-    batch = data.get("chargerstations", [])
-    print(f"DEBUG: antal stationer i chargerstations: {len(batch)= }")
-
-    if not batch:
-        print("DEBUG: No data - stopping processe")
+    if not stations:
         return
 
-    print("Start yield for pipeline")
-    for station in batch:
-        
+    for station in stations:
         station_id = station["csmd"].get("id")
-        update_date = station["csmd"]["Updated"]
-        data_conn = station["attr"]["conn"]
-        
-        for connector in data_conn.keys():
-            
-            data_attribute = station["attr"]["conn"][connector]
-            for key in data_attribute.keys():
+        update_date = station["csmd"].get("Updated")
+        conn_dict = station.get("attr", {}).get("conn", {})
+
+        for connector_nr, attributes in conn_dict.items():
+            for _, attr in attributes.items():
                 yield {
                     "station_id": station_id,
                     "updated_date": update_date,
-                    "connector_nr": connector,
-                    "attrtypeid": data_conn[connector][key].get("attrtypeid"),
-                    "attrname": data_conn[connector][key].get("attrname"),
-                    "attrvalid": data_conn[connector][key].get("attrvalid"),
-                    "trans": data_conn[connector][key].get("trans"),
-                    "attrval": data_conn[connector][key].get("attrval")
+                    "connector_nr": connector_nr,
+                    "attrtypeid": attr.get("attrtypeid"),
+                    "attrname": attr.get("attrname"),
+                    "attrvalid": attr.get("attrvalid"),
+                    "trans": attr.get("trans"),
+                    "attrval": attr.get("attrval"),
                 }
 
 
-def run_pipeline():
-    pipeline = dlt.pipeline(
-        pipeline_name="charger_station",
-        destination=dlt.destinations.duckdb(path_duckdb),
-        dataset_name="staging",
-    )
-    
-    info = pipeline.run(data=[csmd_data(), status_online_data(), connector_data()])
+@dlt.source
+def nobil_source():
+    return [
+        csmd_data(),
+        status_online_data(),
+        connector_data(),
+    ]
 
-    return info
-
-if __name__ == "__main__":
-
-    run_pipeline()

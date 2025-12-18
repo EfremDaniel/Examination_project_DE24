@@ -21,3 +21,19 @@ sources:
     tables:
       - name: trafik_analys
         identifier: trafikanalys
+
+  - name: nobil
+    schema: staging
+    tables:
+      - name: csmd
+        meta:
+          dagster:
+            asset_key: ['dlt_nobil_source_csmd']
+      - name:
+        meta:
+          dagster:
+            asset_key: ['dlt_nobil_source_status_online']
+      - name:
+        meta:
+          dagster:
+            asset_key: ['dlt_nobil_source_connector']
