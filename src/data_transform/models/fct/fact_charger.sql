@@ -20,3 +20,11 @@ left join
 st on csmd.id = st.station_id
 left join
 conn on csmd.id = conn.station_id
+where exists (
+  select
+  1
+  from {{ ref('municipality_lan') }} ml 
+  where trim(lower(csmd.municipality)) = trim(lower(ml.kommun))
+  and trim(lower(csmd.county)) = trim(lower(ml.l_n))
+)
+

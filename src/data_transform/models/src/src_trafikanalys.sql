@@ -11,9 +11,5 @@ select
 from tr
 where 
     AR between 2016 and 2024
-    and Drivmedel in ['El', 'Elhybrid', 'Laddhybrid']
-    and lower(l_n) not in ['okänt län', 'totalt']
-    and lower(kommun) not like 'okända kommun%'
-    and lower(kommun) not like '%totalt%'
-order by
-    AR desc
+    and Drivmedel in ('El', 'Elhybrid', 'Laddhybrid')
+

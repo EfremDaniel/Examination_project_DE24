@@ -13,7 +13,14 @@ select
     {{ dbt_utils.generate_surrogate_key(['municipality', 'county']) }} as geo_id,
     municipality,
     county
-from csmd_trafikanalys
+from csmd_trafikanalys ct
+where exists (
+    select 
+    1
+    from {{ ref('municipality_lan') }} ml 
+    where ct.municipality = trim(lower(ml.kommun)) 
+    and ct.county = trim(lower(ml.l_n))
+)
 
 {# 
 select 
