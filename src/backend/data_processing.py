@@ -5,8 +5,9 @@ PATH_DUCKDB = Path(__file__).parents[1] / "data_warehouse" / "data.duckdb"
 
 
 def query_analytics(query):
-    conn = duckdb.connect(PATH_DUCKDB, read_only=True) 
-    df = conn.execute(query).fetchdf()
-    return df
+    
+    with duckdb.connect(PATH_DUCKDB, read_only=True)  as conn:
+        df = conn.execute(query).fetchdf()
+        return df
 
   
