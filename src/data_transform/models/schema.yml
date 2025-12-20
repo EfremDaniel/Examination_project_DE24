@@ -9,14 +9,6 @@ models:
               to: ref('dim_charger')
               field: charger_id
           
-
-      - name: area_id
-        description: "Foreign key from dim_area"
-        data_tests:
-          - relationships:
-              to: ref('dim_area')
-              field: area_id
-
       - name: geo_id
         description: "Foreign key from dim_geo"
         data_tests:
@@ -40,7 +32,7 @@ models:
           - dbt_expectations.expect_column_values_to_be_of_type:
               column_type: date
 
-      - name: created
+      - name: created_date
         description: "Date when charger was created in Nobil"
         data_tests:
           - dbt_expectations.expect_column_values_to_be_of_type:

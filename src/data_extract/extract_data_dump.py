@@ -1,5 +1,5 @@
 import requests
-from constants.utils import API_KEY_NOBIL
+from backend.constants.utils import API_KEY_NOBIL
 import sys
 import dlt
 from pathlib import Path
@@ -84,6 +84,7 @@ def status_online_data():
 
         station_id = station["csmd"].get("id")
         update_date = station["csmd"]["Updated"]
+        created_date = station["csmd"]["Created"]
         st_dict = station["attr"]["st"]
         
         
@@ -92,6 +93,7 @@ def status_online_data():
             yield {
                 "station_id": station_id,
                 "updated_date": update_date,
+                "created_date": created_date,
                 "attr_key": key,
                 "attrtypeid": attr.get("attrtypeid"),
                 "attrname": attr.get("attrname"),
@@ -117,6 +119,7 @@ def connector_data():
       
         station_id = station["csmd"].get("id")
         update_date = station["csmd"]["Updated"]
+        created_date = station["csmd"]["Created"]
         data_conn = station["attr"]["conn"]
         
         for connector in data_conn.keys():
@@ -126,6 +129,7 @@ def connector_data():
                 yield {
                     "station_id": station_id,
                     "updated_date": update_date,
+                    "created_date": created_date,
                     "connector_nr": connector,
                     "attrtypeid": data_conn[connector][key].get("attrtypeid"),
                     "attrname": data_conn[connector][key].get("attrname"),
