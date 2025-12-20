@@ -1,4 +1,6 @@
 {
-    "taipyStudio.gUI.elementsFilePaths": [],
-    "dbt.perspectiveTheme": "Vintage"
+  "taipyStudio.gUI.elementsFilePaths": [],
+  "dbt.perspectiveTheme": "Vintage",
+  "python.defaultInterpreterPath": ".venv/bin/python",
+  "dbt.dbtPath": ".venv/bin/dbt"
 }

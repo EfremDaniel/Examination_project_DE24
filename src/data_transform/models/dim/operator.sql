@@ -1,4 +1,4 @@
-with owned_operator as (select * from {{ ref('src_csmd') }}),
+with owned_operator as (select * from {{ ref('src_csmd') }})
 
 
 select 
