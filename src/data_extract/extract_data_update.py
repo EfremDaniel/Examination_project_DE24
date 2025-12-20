@@ -1,7 +1,7 @@
 import dlt
 import requests
 import sys
-from constants.utils import API_KEY_NOBIL, DATE_NOW
+from backend.constants.utils import API_KEY_NOBIL, DATE_NOW
 
 dlt.config["load.truncate_staging_dataset"] = True
 
@@ -75,12 +75,14 @@ def status_online_data():
     for station in stations:
         station_id = station["csmd"].get("id")
         update_date = station["csmd"].get("Updated")
+        created_date = station["csmd"].get("Created")
         st_dict = station.get("attr", {}).get("st", {})
 
         for key, attr in st_dict.items():
             yield {
                 "station_id": station_id,
                 "updated_date": update_date,
+                "created_date": created_date,
                 "attr_key": key,
                 "attrtypeid": attr.get("attrtypeid"),
                 "attrname": attr.get("attrname"),
@@ -101,6 +103,7 @@ def connector_data():
     for station in stations:
         station_id = station["csmd"].get("id")
         update_date = station["csmd"].get("Updated")
+        created_date = station["csmd"].get("Created")
         conn_dict = station.get("attr", {}).get("conn", {})
 
         for connector_nr, attributes in conn_dict.items():
@@ -108,6 +111,7 @@ def connector_data():
                 yield {
                     "station_id": station_id,
                     "updated_date": update_date,
+                    "created_date": created_date,
                     "connector_nr": connector_nr,
                     "attrtypeid": attr.get("attrtypeid"),
                     "attrname": attr.get("attrname"),
