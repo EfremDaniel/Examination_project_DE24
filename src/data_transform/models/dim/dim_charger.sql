@@ -17,3 +17,4 @@ st on csmd.id = st.station_id
 left join
 conn on csmd.id = conn.station_id
 group by charger_id, parking_type, connector_type
+

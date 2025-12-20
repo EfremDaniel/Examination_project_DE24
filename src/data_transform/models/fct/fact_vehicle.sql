@@ -5,4 +5,11 @@ select
     {{ dbt_utils.generate_surrogate_key(['trim(lower(ft_v.municipality))', 'trim(lower(ft_v.county))']) }} as geo_id,
     cast(year as int) as year
 from ft_v
+where exists (
+    select
+    1
+    from {{ ref('municipality_lan') }} ml 
+    where ft_v.municipality = trim(lower(ml.kommun))
+    and ft_v.county = trim(lower(ml.l_n))
+)
 

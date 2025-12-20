@@ -6,3 +6,4 @@ select
     fuel
 from tr
 group by vehicle_id, fuel
+

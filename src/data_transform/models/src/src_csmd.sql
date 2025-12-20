@@ -58,6 +58,5 @@ final_table as (
 )
 
 select * from final_table
-where Upper(municipality) not in ('RINSTED', 'GENTOFTE', 'HILLERØD', 'KOLDING', 'FURESØ', 'AABENRAA', 'BALLERUP', 'GLADSAXE')
-and lower(county) not in ('sjæland', 'hovestaden', 'syddanmark')
+
 
