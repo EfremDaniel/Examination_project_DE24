@@ -8,7 +8,7 @@ csmd_update_dedup as ({{dbt_utils.deduplicate(
 ),
 dump_filter as (
     select
-        cd.id,
+        cd.id as station_id,
         cd.name,
         cd.street,
         cd.zipcode,
@@ -33,7 +33,7 @@ dump_filter as (
 ),
 updates as (
     select
-        cud.id,
+        cud.id as station_id,
         cud.name,
         cud.street,
         cud.zipcode,

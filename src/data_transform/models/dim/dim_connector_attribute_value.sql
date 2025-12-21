@@ -8,9 +8,3 @@ from
     conn 
 group by attribute_name, trans
 
-{# select
-    conn_id,
-    count(*) as n
-from t 
-group by conn_id
-having count(*) > 1 #}
