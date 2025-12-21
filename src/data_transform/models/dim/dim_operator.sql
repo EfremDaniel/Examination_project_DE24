@@ -8,17 +8,5 @@ from
     owned_operator
 group by operator
 
-{# select
-    operator_id,
-    count(*) as n
-from t 
-group by operator_id
-having count(*) > 1 #}
-
-
-
-
-
-
 
 

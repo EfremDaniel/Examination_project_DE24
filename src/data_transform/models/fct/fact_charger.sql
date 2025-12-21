@@ -1,7 +1,7 @@
 with csmd as (select * from {{ ref('src_csmd') }})
 
 select
-csmd.id as csmd_id,
+station_id,
 {{dbt_utils.generate_surrogate_key(['csmd.operator'])}} as operator_id,
 {{ dbt_utils.generate_surrogate_key(['trim(lower(csmd.municipality))', 'trim(lower(csmd.county))']) }} as geo_id,
 cast(csmd.number_charging_points as int) as number_charging_points,

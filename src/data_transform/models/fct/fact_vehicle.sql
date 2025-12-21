@@ -9,7 +9,7 @@ where exists (
     select
     1
     from {{ ref('municipality_lan') }} ml 
-    where ft_v.municipality = trim(lower(ml.kommun))
-    and ft_v.county = trim(lower(ml.l_n))
+    where trim(lower(ft_v.municipality)) = trim(lower(ml.kommun))
+    and trim(lower(ft_v.county)) = trim(lower(ml.l_n))
 )
 

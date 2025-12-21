@@ -22,13 +22,4 @@ where exists (
     and ct.county = trim(lower(ml.l_n))
 )
 
-{# 
-select 
-    geo_id,
-    count(*) as n
-from right_table
-group by geo_id
-having n > 1
-order by n asc #}
-
 
