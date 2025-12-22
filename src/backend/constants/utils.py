@@ -3,11 +3,10 @@ import os
 from datetime import date
 import datetime
 
+
 load_dotenv()
 
 API_KEY_NOBIL = os.getenv("API_KEY_NOBIL")
-
-
 
 
 

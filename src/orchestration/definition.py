@@ -11,7 +11,11 @@ import dagster as dg
 from dagster_dlt import DagsterDltResource, dlt_assets
 from dagster_dbt import DbtCliResource, DbtProject, dbt_assets
 from data_extract.extract_data_update import nobil_source
+from pathlib import Path
 
+
+# path to duckdb
+db_path = str(Path(__file__).parents[1] / "data_warehouse/data.duckdb")
 
 # This create a Dagster resource
 dlt_resource = DagsterDltResource()
@@ -33,7 +37,7 @@ dlt_resource = DagsterDltResource()
     dlt_pipeline=dlt.pipeline(
         pipeline_name="nobil_pipeline",
         dataset_name="staging",
-        destination=dlt.destinations.duckdb("data.duckdb"),
+        destination=dlt.destinations.duckdb(db_path),
     ),
 )
 def dlt_load(context: dg.AssetExecutionContext,dlt: DagsterDltResource):
@@ -49,7 +53,7 @@ def dlt_load(context: dg.AssetExecutionContext,dlt: DagsterDltResource):
 #                      #
 # ==================== #
 
-dbt_project_dir = Path(__file__).parents[1] / "src" / "data_transform"
+dbt_project_dir = Path(__file__).parents[1] / "data_transform"
 profiles_dir = Path.home() / ".dbt"
 
 dbt_project = DbtProject(
