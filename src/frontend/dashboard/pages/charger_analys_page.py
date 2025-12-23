@@ -1,107 +1,145 @@
 import streamlit as st
 from backend.data_processing import query_analytics
 
-def list_county(df):
-    county = df["county"].unique()
-    return county
+st.set_page_config(
+    page_title="Charger analysis",
+    page_icon="⚡",
+    layout="wide"
+)
 
-def station_county(df, county):
-    
-    count_county = df.groupby("county")["antal_ladd_stationer"].sum()
-    
-    return count_county.loc[county].astype(int)
-    
-def ladd_punkter(df, county):
-    
-    count_ladd_punkter = df.groupby("county")["laddpunkter"].sum()
-    
-    return count_ladd_punkter.loc[county].astype(int)
+# =========================
+# HEADER
+# =========================
 
+st.title("⚡ Charger analysis")
 
-def ladd_stationer_elbilar(df, county):
-    
-    load_station = df.groupby("county")["antal_ladd_stationer"].sum()
-    amount_vehicle = df.groupby("county")["total_vehicle"].sum()
-    
-    return round(load_station.loc[county] / amount_vehicle.loc[county] * 1000, 2)
+st.markdown(
+    """
+    **Interaktiv analys av Sveriges publika laddinfrastruktur.**  
+    Välj ett län för att analysera laddstationer, laddpunkter
+    och kapacitet i relation till elbilsbeståndet.
+    """
+)
 
-def pr_snabb_ladd_stationer(df, county):
-    
-    
-    count_total_charger_county = df.groupby("county")["antal_ladd_stationer"].sum()
-    count_fast_charger_county = df.groupby("county")["antal_snabb_ladd_stationer"].sum()
-    
-    return f"{round(100 * (count_fast_charger_county.loc[county]/count_total_charger_county.loc[county]),2)}%"
+st.divider()
 
-def kw_ladd_stationer(df, county):
-    
-    kw = df.groupby("county")["total_kw"].sum()
-    
-    car = df.groupby("county")["total_vehicle"].sum()
-    
-    return f"{round((kw.loc[county]/car.loc[county]) * 1000,2)}kW" 
+# =========================
+# DATA
+# =========================
 
-def vehicle_per_county(df, county):
-    
-    amount_vehicle = df.groupby("county")["total_vehicle"].sum()
-    
-    return amount_vehicle.loc[county].astype(int)
+df_nr_charger = query_analytics("nr_charger")
+df_infra = query_analytics("infrastructur")
 
-def layout():
-    
-    df_nr_charger = query_analytics("nr_charger")
-    df_infrastructur = query_analytics("infrastructur")
-    
-    st.title("CHARGER BUZZ", text_alignment="center")
-    st.markdown("---")
-    st.markdown("")
+# =========================
+# KONTROLLPANEL
+# =========================
 
+with st.container(border=True):
+    st.markdown("### 🔧 Kontrollpanel")
 
+    county_options = ["Välj län"] + sorted(df_nr_charger["county"].unique())
 
-    st.markdown("## kpi:er för antal ladd stationer ladd punkter och procent för snabb ladd stationer i Sverige")
+    county = st.selectbox(
+        "Län",
+        options=county_options,
+        index=0,
+        help="Välj ett län för att uppdatera alla nyckeltal och analyser."
+    )
 
-    county = st.selectbox(label= "Län", options=list_county(df_nr_charger), width= 280)
+st.divider()
 
+# =========================
+# RESULTAT
+# =========================
 
+if county != "Välj län":
+
+    st.subheader("📊 Resultat")
+
+    # KPI:er
     col1, col2, col3 = st.columns(3)
+
     with col1:
-        container1 = st.container(border= True)
-        container1.metric(label= "Antal ladd stationer", value= station_county(df= df_nr_charger, county= county))
+        total_stationer = (
+            df_nr_charger
+            .groupby("county")["antal_ladd_stationer"]
+            .sum()
+            .loc[county]
+        )
+        st.metric("Antal laddstationer", int(total_stationer))
+
     with col2:
-        container2= st.container(border=True)
-        container2.metric(label= "Antal ladd punkter", value= ladd_punkter(df= df_nr_charger, county= county))
-        
+        laddpunkter = (
+            df_nr_charger
+            .groupby("county")["laddpunkter"]
+            .sum()
+            .loc[county]
+        )
+        st.metric("Antal laddpunkter", int(laddpunkter))
+
     with col3:
-        container4 = st.container(border=True)
-        container4.metric(label= "Procentantal för snabb laddare", value= pr_snabb_ladd_stationer(df= df_nr_charger, county= county))
+        fast = (
+            df_nr_charger
+            .groupby("county")["antal_snabb_ladd_stationer"]
+            .sum()
+            .loc[county]
+        )
+        st.metric(
+            "Andel snabbladdare",
+            f"{round((fast / total_stationer) * 100, 1)} %"
+        )
 
-    # barchart of municipality antal ladd stationer      # barchart of municipality procentantal ladd stationer
-    #st.plotly_chart()                
+    st.divider()
 
+    # Kapacitet vs elbilar
+    st.subheader("🚗 Kapacitet i relation till elbilar")
 
-    st.markdown("## KPI:er för antal laddstationer per 1000 bilar")
+    col4, col5, col6 = st.columns(3)
 
-    col5, col6, col7 = st.columns(3)
+    with col4:
+        stationer_per_1000 = (
+            df_infra
+            .groupby("county")["antal_ladd_stationer"]
+            .sum()
+            .loc[county]
+            /
+            df_infra
+            .groupby("county")["total_vehicle"]
+            .sum()
+            .loc[county]
+            * 1000
+        )
+        st.metric(
+            "Laddstationer per 1000 elbilar",
+            round(stationer_per_1000, 2)
+        )
 
     with col5:
-        container5 = st.container(border=True)
-        container5.metric(label="Antal laddstationer per 1000 bilar", value= ladd_stationer_elbilar(df = df_infrastructur, county= county))
-        
+        kw_per_1000 = (
+            df_infra
+            .groupby("county")["total_kw"]
+            .sum()
+            .loc[county]
+            /
+            df_infra
+            .groupby("county")["total_vehicle"]
+            .sum()
+            .loc[county]
+            * 1000
+        )
+        st.metric(
+            "Installerad effekt per 1000 elbilar",
+            f"{round(kw_per_1000, 1)} kW"
+        )
+
     with col6:
-        container6 = st.container(border=True)
-        container6.metric(label="Installerad laddeffekt (kW) per 1000 elbilar", value= kw_ladd_stationer(df= df_infrastructur, county= county))
-        
-    with col7:
-        container7 = st.container(border=True)
-        container7.metric(label="Antal laddfordom", value= vehicle_per_county(df = df_infrastructur, county= county))
+        vehicles = (
+            df_infra
+            .groupby("county")["total_vehicle"]
+            .sum()
+            .loc[county]
+        )
+        st.metric("Antal elbilar", int(vehicles))
 
-
-
-if __name__=="__main__":
-    
-    st.set_page_config(
-    page_title="Charger buzz",
-    page_icon="🔋",
-    layout="wide"
-    )
-    layout()
+else:
+    st.info("⬆️ Välj ett län i kontrollpanelen för att visa analys.")
