@@ -18,6 +18,7 @@ dependencies = [
     "python-dotenv>=1.0.1",
     "taipy>=4.1.0",
     "streamlit>=1.52.2",
+    "plotly-express>=0.4.1",
 ]
 
 [build-system]
