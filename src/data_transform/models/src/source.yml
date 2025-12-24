@@ -1,6 +1,5 @@
 sources:
   - name: chargerstation  
-    database: data
     schema: staging       
     tables:
       - name: csmd_dump
@@ -10,13 +9,12 @@ sources:
       - name: conn_dump
         identifier: connector_table_dump
       - name: csmd_update
-        identifier: csmd_table_update
+        identifier: csmd
       - name: st_update
-        identifier: status_online_table_update
+        identifier: status_online
       - name: conn_update
-        identifier: connector_table_update
+        identifier: connector
   - name: trafikanalys
-    database: data
     schema: staging
     tables:
       - name: trafik_analys

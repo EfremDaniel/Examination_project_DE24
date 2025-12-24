@@ -79,7 +79,7 @@ models:
         data_tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_of_type:
-              column_type: integer
+              column_type: number
 
 
   - name: dim_connector_attribute_value
@@ -104,7 +104,6 @@ models:
         data_tests:
           - unique
           - not_null
-        description: "varchar"
       - name: municipality
         description: "varchar"
       - name: county

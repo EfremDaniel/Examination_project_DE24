@@ -58,7 +58,7 @@ vehicle_aggr as (
         ft_vehicle.geo_id,
         sum(dm_vehicle.vehicle_in_traffic) as total_vehicle
     from ft_vehicle
-    left join latest_year ly on ft_vehicle.year = ly.year 
+    left join latest_year ly on ft_vehicle.year = ly."year" 
     left join dm_vehicle on ft_vehicle.vehicle_id = dm_vehicle.vehicle_id
     group by ft_vehicle.geo_id
 )

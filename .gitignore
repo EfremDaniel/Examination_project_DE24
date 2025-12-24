@@ -209,3 +209,5 @@ __marimo__/
 *.duckdb
 *.duckdb.wal
 
+.dlt
+setup_user.sql

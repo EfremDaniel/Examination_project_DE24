@@ -1,7 +1,7 @@
 from pathlib import Path
 import dlt 
 import json
-
+import os 
 path_to_data= Path(__file__).parents[1]/ "data/population.json"
 
 path_duckdb = str(Path(__file__).parents[1]/"data_warehouse/data.duckdb")
