@@ -11,7 +11,7 @@ dependencies = [
     "dagster-dlt>=0.28.3",
     "dbt-core>=1.10.15",
     "dbt-duckdb>=1.10.0",
-    "dlt[duckdb]>=1.18.2",
+    "dlt[duckdb,snowflake]>=1.18.2",
     "duckdb>=1.4.2",
     "ipykernel>=7.1.0",
     "pandas>=2.2.2",
@@ -19,6 +19,7 @@ dependencies = [
     "taipy>=4.1.0",
     "streamlit>=1.52.2",
     "plotly-express>=0.4.1",
+    "dbt-snowflake>=1.11.0",
 ]
 
 [build-system]

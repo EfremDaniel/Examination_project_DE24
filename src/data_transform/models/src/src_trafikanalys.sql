@@ -3,7 +3,7 @@ tr as (select * from {{ source('trafikanalys', 'trafik_analys') }})
 
 select
     id,
-    AR as 'year',
+    AR as year,
     Drivmedel as fuel,
     antal_i_trafik as vehicle_in_traffic,
     lower(l_n) as county,

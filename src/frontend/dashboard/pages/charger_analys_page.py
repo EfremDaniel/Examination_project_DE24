@@ -37,7 +37,7 @@ df_infra = query_analytics("infrastructur")
 with st.container(border=True):
     st.markdown("### 🔧 Kontrollpanel")
 
-    county_options = ["Välj län"] + sorted(df_nr_charger["county"].unique())
+    county_options = ["Välj län"] + sorted(df_nr_charger["COUNTY"].unique())
 
     county = st.selectbox(
         "Län",
@@ -62,7 +62,7 @@ if county != "Välj län":
     with col1:
         total_stationer = (
             df_nr_charger
-            .groupby("county")["antal_ladd_stationer"]
+            .groupby("COUNTY")["ANTAL_LADD_STATIONER"]
             .sum()
             .loc[county]
         )
@@ -71,7 +71,7 @@ if county != "Välj län":
     with col2:
         laddpunkter = (
             df_nr_charger
-            .groupby("county")["laddpunkter"]
+            .groupby("COUNTY")["LADDPUNKTER"]
             .sum()
             .loc[county]
         )
@@ -80,7 +80,7 @@ if county != "Välj län":
     with col3:
         fast = (
             df_nr_charger
-            .groupby("county")["antal_snabb_ladd_stationer"]
+            .groupby("COUNTY")["ANTAL_SNABB_LADD_STATIONER"]
             .sum()
             .loc[county]
         )
@@ -99,12 +99,12 @@ if county != "Välj län":
     with col4:
         stationer_per_1000 = (
             df_infra
-            .groupby("county")["antal_ladd_stationer"]
+            .groupby("COUNTY")["ANTAL_LADD_STATIONER"]
             .sum()
             .loc[county]
             /
             df_infra
-            .groupby("county")["total_vehicle"]
+            .groupby("COUNTY")["TOTAL_VEHICLE"]
             .sum()
             .loc[county]
             * 1000
@@ -117,12 +117,12 @@ if county != "Välj län":
     with col5:
         kw_per_1000 = (
             df_infra
-            .groupby("county")["total_kw"]
+            .groupby("COUNTY")["TOTAL_KW"]
             .sum()
             .loc[county]
             /
             df_infra
-            .groupby("county")["total_vehicle"]
+            .groupby("COUNTY")["TOTAL_VEHICLE"]
             .sum()
             .loc[county]
             * 1000
@@ -135,7 +135,7 @@ if county != "Välj län":
     with col6:
         vehicles = (
             df_infra
-            .groupby("county")["total_vehicle"]
+            .groupby("COUNTY")["TOTAL_VEHICLE"]
             .sum()
             .loc[county]
         )

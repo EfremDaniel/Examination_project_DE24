@@ -3,9 +3,10 @@ from backend.constants.utils import API_KEY_NOBIL
 import sys
 import dlt
 from pathlib import Path
+import os
 
 
-path_duckdb = str(Path(__file__).parents[1] / "data_warehouse/data.duckdb")
+# path_duckdb = str(Path(__file__).parents[1] / "data_warehouse/data.duckdb")
 
 _catched_data = None
 
@@ -86,8 +87,8 @@ def status_online_data():
         update_date = station["csmd"]["Updated"]
         created_date = station["csmd"]["Created"]
         st_dict = station["attr"]["st"]
-        
-        
+
+
         for key, attr in st_dict.items():
 
             yield {
@@ -101,7 +102,7 @@ def status_online_data():
                 'trans': attr.get("trans"),
                 'attrval': attr.get("attrval")
             }
-        
+
 @dlt.resource(write_disposition="replace", name="connector_table_dump")
 def connector_data():
 
@@ -116,14 +117,14 @@ def connector_data():
 
     print("Start yield for pipeline")
     for station in batch:
-      
+
         station_id = station["csmd"].get("id")
         update_date = station["csmd"]["Updated"]
         created_date = station["csmd"]["Created"]
         data_conn = station["attr"]["conn"]
-        
+
         for connector in data_conn.keys():
-            
+
             data_attribute = station["attr"]["conn"][connector]
             for key in data_attribute.keys():
                 yield {
@@ -141,14 +142,16 @@ def connector_data():
 def run_pipeline():
     pipeline = dlt.pipeline(
         pipeline_name="charger_station",
-        destination=dlt.destinations.duckdb(path_duckdb),
+        destination="snowflake",
         dataset_name="staging",
     )
-    
+
     info = pipeline.run(data=[csmd_data(), status_online_data(), connector_data()])
 
     return info
 
 if __name__ == "__main__":
-
+    working_directory = Path(__file__).parent
+    os.chdir(working_directory)
+    
     run_pipeline()

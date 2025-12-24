@@ -1,9 +1,13 @@
 import dlt
 import requests
 import sys
+from pathlib import Path
+import os 
 from backend.constants.utils import API_KEY_NOBIL, DATE_NOW
 
+
 dlt.config["load.truncate_staging_dataset"] = True
+
 
 
 _catched_data = None
