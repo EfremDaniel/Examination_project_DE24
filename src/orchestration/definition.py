@@ -15,7 +15,7 @@ from pathlib import Path
 
 
 # path to duckdb
-db_path = str(Path(__file__).parents[1] / "data_warehouse/data.duckdb")
+# db_path = str(Path(__file__).parents[1] / "data_warehouse/data.duckdb")
 
 # This create a Dagster resource
 dlt_resource = DagsterDltResource()
@@ -37,7 +37,7 @@ dlt_resource = DagsterDltResource()
     dlt_pipeline=dlt.pipeline(
         pipeline_name="nobil_pipeline",
         dataset_name="staging",
-        destination=dlt.destinations.duckdb(db_path),
+        destination="snowflake",
     ),
 )
 def dlt_load(context: dg.AssetExecutionContext,dlt: DagsterDltResource):
@@ -82,16 +82,20 @@ def dbt_models(context: dg.AssetExecutionContext, dbt: DbtCliResource,):
 # ==================== #
 
 # Run ALL dlt-assets from nobil_source
-# using key_prefixes() to have all of the assets_keys
 job_dlt = dg.define_asset_job(
     name="job_dlt",
-    selection=dg.AssetSelection.key_prefixes("dlt_nobil_source"),
+    selection=dg.AssetSelection.keys(
+        dg.AssetKey("dlt_nobil_source_csmd_data"),
+        dg.AssetKey("dlt_nobil_source_status_online_data"),
+        dg.AssetKey("dlt_nobil_source_connector_data"),
+    )
 )
 
 # This will run all of the dbt-modells
 job_dbt = dg.define_asset_job(
     name="job_dbt",
-    selection=dg.AssetSelection.all(),
+    selection=dg.AssetSelection.key_prefixes("warehouse", "marts")
+    | dg.AssetSelection.keys("municipality_lan")
 )
 
 
@@ -119,12 +123,13 @@ schedule_dlt = dg.ScheduleDefinition(
 # ==================== #
 
 # A sensor that will trigger when dlt job is materialized
-@dg.asset_sensor(
-    asset_key=dg.AssetKey("dlt_nobil_source_csmd"),
-    job_name="job_dbt",
+@dg.run_status_sensor(
+    run_status=dg.DagsterRunStatus.SUCCESS,
+    monitored_jobs=[job_dlt],
+    request_job=job_dbt,
 )
-def dlt_to_dbt_sensor():
-    yield dg.RunRequest()
+def dlt_success_trigger(context):
+    yield dg.RunRequest(run_key=context.dagster_run.run_id)
 
 
 
@@ -141,5 +146,5 @@ defs = dg.Definitions(
     resources={ "dlt": dlt_resource, "dbt": dbt_resource},
     jobs=[job_dlt, job_dbt],
     schedules=[schedule_dlt],
-    sensors=[dlt_to_dbt_sensor]
+    sensors=[dlt_success_trigger]
 )
