@@ -10,28 +10,26 @@ sources:
         identifier: connector_table_dump
       - name: csmd_update
         identifier: csmd
+        meta:
+          dagster:
+            asset_key: ['dlt_nobil_source_csmd_data']
+
       - name: st_update
         identifier: status_online
+        meta:
+          dagster:
+            asset_key: ['dlt_nobil_source_status_online_data']
+
       - name: conn_update
         identifier: connector
+        meta:
+          dagster:
+            asset_key: ['dlt_nobil_source_connector_data']
+  
   - name: trafikanalys
     schema: staging
     tables:
       - name: trafik_analys
         identifier: trafikanalys
 
-  - name: nobil
-    schema: staging
-    tables:
-      - name: csmd
-        meta:
-          dagster:
-            asset_key: ['dlt_nobil_source_csmd']
-      - name: st
-        meta:
-          dagster:
-            asset_key: ['dlt_nobil_source_status_online']
-      - name: conn
-        meta:
-          dagster:
-            asset_key: ['dlt_nobil_source_connector']
+
