@@ -1,0 +1,30 @@
+# syntax=docker/dockerfile:1.6
+
+FROM python:3.11
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+WORKDIR /pipeline
+
+# locking pyproject and adding it in catalog (pipeline)
+COPY pyproject.toml uv.lock ./
+
+# uv sync --no-install-project will install the dependencies of the project but not the project itself. Since the project changes frequently, 
+# but its dependencies are generally static.
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --locked --no-install-project
+
+# create folder src, because in pyproject it set to find src and uv.locked need this path to succed. 
+RUN mkdir -p /pipeline/src
+
+# adding code from the project
+COPY src/backend/constants/ /pipeline/src/backend/constants/
+COPY src/data_extract/extract_data_update.py /pipeline/src/data_extract/extract_data_update.py
+COPY src/data_transform/ /pipeline/src/data_transform/
+COPY src/orchestration/ /pipeline/src/orchestration/
+
+# install project itself
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --locked
+
+
+CMD ["uv", "run", "dagster", "dev", "-f", "src/orchestration/definition.py", "-h", "0.0.0.0", "-p", "3000"]

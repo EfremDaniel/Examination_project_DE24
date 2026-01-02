@@ -1,0 +1,38 @@
+
+
+services:
+  dagster_webserver:
+    build:
+      context: .
+      dockerfile: dockerfile.orchestration
+    env_file:
+      - .env
+    environment:
+      - DAGSTER_HOME=/dagster_home
+    volumes:
+      - dagster_home:/dagster_home
+      - ${HOME}/.dbt/profiles.yml:/root/.dbt/profiles.yml:ro
+      - ./.dlt:/pipeline/.dlt
+    ports: 
+      - "5000:3000"
+    command: ["uv", "run", "dagster-webserver", "-h", "0.0.0.0", "-p", "3000", "-f", "src/orchestration/definition.py"]
+    restart: unless-stopped
+
+  dagster_daemon:
+    build:
+      context: .
+      dockerfile: dockerfile.orchestration
+    env_file:
+      - .env
+    environment:
+      - DAGSTER_HOME=/dagster_home
+    volumes:
+      - dagster_home:/dagster_home
+      - ${HOME}/.dbt/profiles.yml:/root/.dbt/profiles.yml:ro
+      - ./.dlt:/pipeline/.dlt
+    command: ["uv", "run", "dagster-daemon", "run", "-f", "src/orchestration/definition.py"]
+    restart: unless-stopped
+    depends_on:
+      - dagster_webserver
+volumes:
+  dagster_home:
