@@ -19,7 +19,6 @@ def horizontal_number_station_bar_chart(county):
     return fig 
 
 
-
 def prepare_municipality_df(df, county):
     """
     Filtrerar på valt län och aggregerar per kommun.
@@ -35,63 +34,64 @@ def prepare_municipality_df(df, county):
     )
 
 
-# =========================
-# PLOTLY EXPRESS
-# =========================
-
-def stationer_per_kommun_bar(df, county, top_n=15):
+def laddstationer_typ_per_kommun_stacked(df, county):
+    """
+    Staplad graf som visar vanliga laddstationer och snabbladdare
+    per kommun i valt län (alla kommuner).
+    """
     df_muni = prepare_municipality_df(df, county)
 
-    df_plot = (
-        df_muni
-        .sort_values("ANTAL_LADD_STATIONER", ascending=False)
-        .head(top_n)
+    df_muni["VANLIGA_LADDSTATIONER"] = (
+        df_muni["ANTAL_LADD_STATIONER"] - df_muni["ANTAL_SNABB_LADD_STATIONER"]
     )
+
+    df_muni = df_muni.sort_values(
+        "ANTAL_LADD_STATIONER", ascending=False
+    )
+
+    df_long = df_muni.melt(
+        id_vars="MUNICIPALITY",
+        value_vars=[
+            "VANLIGA_LADDSTATIONER",
+            "ANTAL_SNABB_LADD_STATIONER"
+        ],
+        var_name="TYP",
+        value_name="ANTAL"
+    )
+
+    df_long["TYP"] = df_long["TYP"].replace({
+        "VANLIGA_LADDSTATIONER": "Vanliga laddstationer",
+        "ANTAL_SNABB_LADD_STATIONER": "Snabbladdstationer"
+    })
 
     fig = px.bar(
-        df_plot,
-        x="ANTAL_LADD_STATIONER",
+        df_long,
+        x="ANTAL",
         y="MUNICIPALITY",
+        color="TYP",
         orientation="h",
-        title="Antal laddstationer per kommun"
-    )
-
-    fig.update_layout(yaxis=dict(autorange="reversed"))
-    return fig
-
-
-def snabbladd_andel_per_kommun_bar(df, county, top_n=15):
-    df_muni = prepare_municipality_df(df, county)
-    df_muni = df_muni[df_muni["ANTAL_LADD_STATIONER"] > 0]
-
-    df_muni["ANDEL_SNABBLADD"] = (
-        df_muni["ANTAL_SNABB_LADD_STATIONER"] /
-        df_muni["ANTAL_LADD_STATIONER"]
-    )
-
-    df_plot = (
-        df_muni
-        .sort_values("ANDEL_SNABBLADD", ascending=False)
-        .head(top_n)
-    )
-
-    fig = px.bar(
-        df_plot,
-        x="ANDEL_SNABBLADD",
-        y="MUNICIPALITY",
-        orientation="h",
-        title="Andel snabbladdare per kommun",
-        labels={"ANDEL_SNABBLADD": "Andel"}
+        barmode="stack",
+        title="Fördelning av laddstationstyper per kommun",
+        labels={
+            "ANTAL": "Antal laddstationer",
+            "MUNICIPALITY": "Kommun",
+            "TYP": "Typ av laddning"
+        }
     )
 
     fig.update_layout(
         yaxis=dict(autorange="reversed"),
-        xaxis_tickformat=".0%"
+        legend_title_text="",
+        height=35 * df_muni["MUNICIPALITY"].nunique() + 150
     )
+
     return fig
 
 
-def laddpunkter_per_station_bar(df, county, top_n=15):
+def laddpunkter_per_station_bar(df, county):
+    """
+    Visar genomsnittligt antal laddpunkter per station per kommun.
+    """
     df_muni = prepare_municipality_df(df, county)
     df_muni = df_muni[df_muni["ANTAL_LADD_STATIONER"] > 0]
 
@@ -100,29 +100,35 @@ def laddpunkter_per_station_bar(df, county, top_n=15):
         df_muni["ANTAL_LADD_STATIONER"]
     )
 
-    df_plot = (
-        df_muni
-        .sort_values("LADDPUNKTER_PER_STATION", ascending=False)
-        .head(top_n)
+    df_muni = df_muni.sort_values(
+        "LADDPUNKTER_PER_STATION", ascending=False
     )
 
     fig = px.bar(
-        df_plot,
+        df_muni,
         x="LADDPUNKTER_PER_STATION",
         y="MUNICIPALITY",
         orientation="h",
-        title="Laddpunkter per station per kommun"
+        title="Laddpunkter per station per kommun",
+        labels={
+            "LADDPUNKTER_PER_STATION": "Laddpunkter per station",
+            "MUNICIPALITY": "Kommun"
+        }
     )
 
-    fig.update_layout(yaxis=dict(autorange="reversed"))
+    fig.update_layout(
+        yaxis=dict(autorange="reversed"),
+        height=35 * df_muni["MUNICIPALITY"].nunique() + 150
+    )
+
     return fig
 
 
-# =========================
-# ALTAIR
-# =========================
-
 def infrastruktur_vs_elbilar_scatter(df_infra, county):
+    """
+    Scatterplot som visar relationen mellan antal elbilar
+    och antal laddstationer per kommun.
+    """
     df_plot = (
         df_infra[df_infra["COUNTY"] == county]
         .groupby("MUNICIPALITY", as_index=False)
@@ -145,8 +151,7 @@ def infrastruktur_vs_elbilar_scatter(df_infra, county):
             ]
         )
         .properties(
-            title="Infrastruktur vs elbilar (kommunnivå)",
-            width=600,
+            title="Infrastruktur i relation till elbilar (kommunnivå)",
             height=400
         )
     )

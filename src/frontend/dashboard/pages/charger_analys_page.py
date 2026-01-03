@@ -1,8 +1,7 @@
 import streamlit as st
 from backend.data_processing import query_analytics
 from frontend.graph.chart_utils import (
-    stationer_per_kommun_bar,
-    snabbladd_andel_per_kommun_bar,
+    laddstationer_typ_per_kommun_stacked,
     laddpunkter_per_station_bar,
     infrastruktur_vs_elbilar_scatter
 )
@@ -26,8 +25,8 @@ st.title("⚡ Charger analysis")
 st.markdown(
     """
     **Interaktiv analys av Sveriges publika laddinfrastruktur.**  
-    Välj ett län för att analysera hur kommunerna inom länet
-    bidrar till laddkapacitet och tillgänglighet.
+    Analysen visar hur kommunerna inom ett län bidrar till både
+    omfattning och typ av laddkapacitet.
     """
 )
 
@@ -66,13 +65,8 @@ if county != "Välj län":
 
     st.subheader(f"📊 Sammanfattning – {county}")
 
-    # Filtrera tidigt
     df_nr_charger_county = df_nr_charger[df_nr_charger["COUNTY"] == county]
     df_infra_county = df_infra[df_infra["COUNTY"] == county]
-
-    # =========================
-    # KPI:er (län-total via kommuner)
-    # =========================
 
     col1, col2, col3 = st.columns(3)
 
@@ -94,37 +88,46 @@ if county != "Välj län":
     st.divider()
 
     # =========================
-    # GRAFER – KOMMUNNIVÅ
+    # KOMMUNANALYS
     # =========================
 
-    st.subheader("🏙️ Fördelning mellan kommuner")
+    st.subheader("🏙️ Kommunernas roll i länets laddinfrastruktur")
 
     st.plotly_chart(
-        stationer_per_kommun_bar(df_nr_charger, county),
+        laddstationer_typ_per_kommun_stacked(df_nr_charger, county),
         use_container_width=True
     )
 
-    st.plotly_chart(
-        snabbladd_andel_per_kommun_bar(df_nr_charger, county),
-        use_container_width=True
+    st.caption(
+        "Staplarna visar både omfattning och typ av laddinfrastruktur per kommun. "
+        "Större kommuner dominerar i volym, medan flera mindre kommuner uppvisar "
+        "en relativt hög andel snabbladdning."
     )
+
+    st.divider()
 
     st.plotly_chart(
         laddpunkter_per_station_bar(df_nr_charger, county),
         use_container_width=True
     )
 
-    st.divider()
+    st.caption(
+        "Grafen visar hur tät laddinfrastrukturen är i genomsnitt. "
+        "Högre värden indikerar stationer med fler laddpunkter."
+    )
 
-    # =========================
-    # INFRASTRUKTUR VS ELBILAR
-    # =========================
+    st.divider()
 
     st.subheader("🚗 Infrastruktur i relation till elbilar")
 
     st.altair_chart(
         infrastruktur_vs_elbilar_scatter(df_infra, county),
         use_container_width=True
+    )
+
+    st.caption(
+        "Relationen mellan antal elbilar och laddstationer per kommun "
+        "indikerar var infrastrukturen är relativt väl- eller underdimensionerad."
     )
 
 else:
