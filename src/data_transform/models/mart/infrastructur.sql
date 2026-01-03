@@ -52,6 +52,15 @@ charger_aggr as (
     group by geo_id
 ),
 
+-- cte block to aggregate connector for each geo_id
+connector_aggr as (
+    select
+        geo_id,
+        count(distinct(ft_conn.conn_id)) as antal_laddpunkter
+    from ft_connector ft_conn
+    left join 
+)
+
 -- cte block to aggregate vehicle for each municipality
 vehicle_aggr as (
     select
