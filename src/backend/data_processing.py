@@ -1,10 +1,6 @@
 import os 
-from pathlib import Path
 from dotenv import load_dotenv
 import snowflake.connector
-import pandas as pd
-
-PATH_DUCKDB = Path(__file__).parents[1] / "data_warehouse" / "data.duckdb"
 
 
 def query_analytics(mart):
@@ -18,7 +14,7 @@ def query_analytics(mart):
         warehouse=os.getenv("SNOWFLAKE_WAREHOUSE"),
         database=os.getenv("SNOWFLAKE_DATABASE"),
         schema=os.getenv("SNOWFLAKE_SCHEMA"),
-        role=os.getenv("SNOWFLAKE_ROLE") )as conn:
+        role=os.getenv("SNOWFLAKE_ROLE") ) as conn:
         
         if mart == 'nr_charger':
             query = 'SELECT * FROM marts.nr_charger;'

@@ -20,6 +20,8 @@ dependencies = [
     "streamlit>=1.52.2",
     "plotly-express>=0.4.1",
     "dbt-snowflake>=1.11.0",
+    "matplotlib>=3.10.8",
+    "seaborn>=0.13.2",
 ]
 
 [build-system]
