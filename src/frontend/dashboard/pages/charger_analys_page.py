@@ -2,9 +2,10 @@ import streamlit as st
 from backend.data_processing import query_analytics
 from frontend.graph.chart_utils import (
     laddstationer_typ_per_kommun_stacked,
-    laddpunkter_per_station_bar,
-    infrastruktur_vs_elbilar_scatter
+    elbil_per_laddpunkt
 )
+
+
 st.markdown(
     """
     <style>
@@ -53,7 +54,6 @@ st.divider()
 # =========================
 
 df_nr_charger = query_analytics("nr_charger")
-df_infra = query_analytics("infrastructur")
 
 # =========================
 # CONTROL PANEL
@@ -82,7 +82,6 @@ if county != "Välj län":
     st.subheader(f"📊 Sammanfattning – {county}")
 
     df_nr_charger_county = df_nr_charger[df_nr_charger["COUNTY"] == county]
-    df_infra_county = df_infra[df_infra["COUNTY"] == county]
 
     col1, col2, col3 = st.columns(3)
 
@@ -110,7 +109,7 @@ if county != "Välj län":
     st.subheader("🏙️ Kommunernas roll i länets laddinfrastruktur")
 
     st.plotly_chart(
-        laddstationer_typ_per_kommun_stacked(df_nr_charger, county),
+        laddstationer_typ_per_kommun_stacked("nr_charger", county),
         use_container_width=True
     )
 
@@ -122,22 +121,22 @@ if county != "Välj län":
 
     st.divider()
 
-    st.plotly_chart(
-        laddpunkter_per_station_bar(df_nr_charger, county),
-        use_container_width=True
-    )
+    # st.plotly_chart(
+    #     laddpunkter_per_station_bar(df_nr_charger, county),
+    #     use_container_width=True
+    # )
 
-    st.caption(
-        "Grafen visar hur tät laddinfrastrukturen är i genomsnitt. "
-        "Högre värden indikerar stationer med fler laddpunkter."
-    )
+    # st.caption(
+    #     "Grafen visar hur tät laddinfrastrukturen är i genomsnitt. "
+    #     "Högre värden indikerar stationer med fler laddpunkter."
+    # )
 
-    st.divider()
+    # st.divider()
 
     st.subheader("🚗 Infrastruktur i relation till elbilar")
 
-    st.altair_chart(
-        infrastruktur_vs_elbilar_scatter(df_infra, county),
+    st.plotly_chart(
+        elbil_per_laddpunkt("nr_charger",county),
         use_container_width=True
     )
 
