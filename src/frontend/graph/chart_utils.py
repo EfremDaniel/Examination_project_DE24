@@ -76,7 +76,10 @@ def laddstationer_typ_per_kommun_stacked(df, county):
             "ANTAL": "Antal laddstationer",
             "MUNICIPALITY": "Kommun",
             "TYP": "Typ av laddning"
-        }
+        },
+        color_discrete_map={
+        "Vanliga laddstationer": "#4E342E",   # mörk grön
+        "Snabbladdstationer": "#F26B1D"}
     )
 
     fig.update_layout(

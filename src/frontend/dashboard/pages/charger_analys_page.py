@@ -5,6 +5,22 @@ from frontend.graph.chart_utils import (
     laddpunkter_per_station_bar,
     infrastruktur_vs_elbilar_scatter
 )
+st.markdown(
+    """
+    <style>
+    /* ===== SIDEBAR ===== */
+    section[data-testid="stSidebar"],
+    section[data-testid="stSidebar"] > div {
+        background-color: #0F3D2E;
+    }
+
+    section[data-testid="stSidebar"] * {
+        color: #E8FFF6;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 # =========================
 # PAGE CONFIG
