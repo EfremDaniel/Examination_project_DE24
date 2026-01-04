@@ -1,28 +1,13 @@
 import plotly_express as px
 from backend.data_processing import query_analytics
-import altair as alt
 
 
-def horizontal_number_station_bar_chart(county):
-    
-    df = query_analytics("nr_charger")
 
-    data = df[df["county"] == county]
-    
-    fig = px.bar(data, x="antal_ladd_stationer", y="municipality", title="Antal laddstationer för varje kommun", orientation="h")
-    
-    fig.update_layout(
-        height = 35 * len(data) + 150
-    )
-    
-    fig.update_yaxes(automargin= True)
-    return fig 
-
-
-def prepare_municipality_df(df, county):
+def prepare_municipality_df(mart, county):
     """
     Filtrerar på valt län och aggregerar per kommun.
     """
+    df = query_analytics(mart)
     return (
         df[df["COUNTY"] == county]
         .groupby("MUNICIPALITY", as_index=False)
@@ -34,12 +19,13 @@ def prepare_municipality_df(df, county):
     )
 
 
-def laddstationer_typ_per_kommun_stacked(df, county):
+def laddstationer_typ_per_kommun_stacked(mart, county):
     """
     Staplad graf som visar vanliga laddstationer och snabbladdare
     per kommun i valt län (alla kommuner).
     """
-    df_muni = prepare_municipality_df(df, county)
+    
+    df_muni = prepare_municipality_df(mart, county)
 
     df_muni["VANLIGA_LADDSTATIONER"] = (
         df_muni["ANTAL_LADD_STATIONER"] - df_muni["ANTAL_SNABB_LADD_STATIONER"]
@@ -91,72 +77,136 @@ def laddstationer_typ_per_kommun_stacked(df, county):
     return fig
 
 
-def laddpunkter_per_station_bar(df, county):
-    """
-    Visar genomsnittligt antal laddpunkter per station per kommun.
-    """
-    df_muni = prepare_municipality_df(df, county)
-    df_muni = df_muni[df_muni["ANTAL_LADD_STATIONER"] > 0]
+# def laddpunkter_per_station_bar(df, county):
+#     """
+#     Visar genomsnittligt antal laddpunkter per station per kommun.
+#     """
+#     df_muni = prepare_municipality_df(df, county)
+#     df_muni = df_muni[df_muni["ANTAL_LADD_STATIONER"] > 0]
 
-    df_muni["LADDPUNKTER_PER_STATION"] = (
-        df_muni["LADDPUNKTER"] /
-        df_muni["ANTAL_LADD_STATIONER"]
+#     df_muni["LADDPUNKTER_PER_STATION"] = (
+#         df_muni["LADDPUNKTER"] /
+#         df_muni["ANTAL_LADD_STATIONER"]
+#     )
+
+#     df_muni = df_muni.sort_values(
+#         "LADDPUNKTER_PER_STATION", ascending=False
+#     )
+
+#     fig = px.bar(
+#         df_muni,
+#         x="LADDPUNKTER_PER_STATION",
+#         y="MUNICIPALITY",
+#         orientation="h",
+#         title="Laddpunkter per station per kommun",
+#         labels={
+#             "LADDPUNKTER_PER_STATION": "Laddpunkter per station",
+#             "MUNICIPALITY": "Kommun"
+#         }
+#     )
+
+#     fig.update_layout(
+#         yaxis=dict(autorange="reversed"),
+#         height=35 * df_muni["MUNICIPALITY"].nunique() + 150
+#     )
+
+#     return fig
+
+
+def elbil_per_laddpunkt(mart, county):
+    """Create a scatter plot for how electricities car per charging point.
+    It show how many vehicle there is on one charging point."""
+    
+    df = query_analytics(mart)
+    df_county = df.query(f"COUNTY == '{county}'")[["MUNICIPALITY", "LADDPUNKTER", "TOTAL_VEHICLE", "ANTAL_SNABB_LADD_STATIONER", "ANTAL_LADD_STATIONER"]]
+    
+    df_county["ELBIL_PER_LADDPUNKT"] = df_county["TOTAL_VEHICLE"]/ df_county["LADDPUNKTER"]
+    df_county["PROCENT_SNABB"] = round(df_county["ANTAL_SNABB_LADD_STATIONER"] / df_county["ANTAL_LADD_STATIONER"] * 100, 2)
+    
+    ticksval_x = [1,2,5,10,20,50,100,200,500,1000,2000,5000,10000]
+    ticksval_y = [10, 20, 50, 100]
+
+    df_county["PROCENT_SNABB_SIZE"] = df_county["PROCENT_SNABB"].clip(lower= 1)
+
+    fig = px.scatter(
+        df_county,
+        x=df_county["LADDPUNKTER"],
+        y=df_county["ELBIL_PER_LADDPUNKT"],
+        hover_name=df_county["MUNICIPALITY"],
+        size= df_county["PROCENT_SNABB_SIZE"],
+        color= df_county["MUNICIPALITY"],
+        size_max=25,
+        opacity=0.6,
+        template="simple_white"
     )
 
-    df_muni = df_muni.sort_values(
-        "LADDPUNKTER_PER_STATION", ascending=False
+
+
+    # Add line where elbil per laddpunkt is 10. 
+    fig.add_hline(y=10, line_width= 2, line_color= "#02010F", opacity=0.6)
+
+
+    fig.update_traces(marker=dict(line=dict(width=0)))
+
+    # update y- and x-axel and its ticks
+    fig.update_xaxes(type="log", tickmode= "array",  tickvals= ticksval_x, ticktext= [str(v) for v in ticksval_x], ticks= "", title_text= "")
+    fig.update_xaxes(showline= True, linewidth= 1, linecolor="rgba(0,0,0,0.3)")
+    fig.update_yaxes(type= "log", tickmode= "array", tickvals= ticksval_y, ticktext= [str(v) for v in ticksval_y], ticks= "", title_text= "")
+    fig.update_yaxes(showline= True, linewidth=1, linecolor="rgba(0,0,0,0.3)")
+
+
+    # Give titel to y-axel
+    fig.add_annotation(
+        text= "ELBILAR PER LADDPUNKT",
+        font= dict(
+            size= 13,
+            color= "black",
+            family= "Ariel"
+        ),
+        xref= "paper",
+        yref= "paper",
+        x= -0.0605,
+        y= 1.10,
+        xanchor="center",
+        yanchor= "top",
+        opacity= 1,
+        showarrow=False
     )
 
-    fig = px.bar(
-        df_muni,
-        x="LADDPUNKTER_PER_STATION",
-        y="MUNICIPALITY",
-        orientation="h",
-        title="Laddpunkter per station per kommun",
-        labels={
-            "LADDPUNKTER_PER_STATION": "Laddpunkter per station",
-            "MUNICIPALITY": "Kommun"
-        }
+    # Give title to x-axel
+    fig.add_annotation(
+        text= "LADDPUNKTER PER KOMMUN",
+        font= dict(
+            size= 15,
+            color="black",
+            family= "Ariel"
+            ), 
+        xref= "paper",
+        yref= "paper",
+        x= 0.1,
+        y= -0.18,
+        opacity=1,
+        xanchor="center",
+        yanchor= "bottom",
+        showarrow=False
     )
 
+
+    # update title 
     fig.update_layout(
-        yaxis=dict(autorange="reversed"),
-        height=35 * df_muni["MUNICIPALITY"].nunique() + 150
+        title={
+            "text": "Elbil per laddpunkt.<br>" 
+            "Cirkelns storlek bestäms över hur stor procent kommuner snabb laddare.",
+            "y": 0.95,
+            "x": 0.11,
+            "xanchor": "left",
+            "yanchor": "top"
+            
+        },
+        margin= dict(l= 155, b= 70, t= 100)
     )
+
+
 
     return fig
-
-
-def infrastruktur_vs_elbilar_scatter(df_infra, county):
-    """
-    Scatterplot som visar relationen mellan antal elbilar
-    och antal laddstationer per kommun.
-    """
-    df_plot = (
-        df_infra[df_infra["COUNTY"] == county]
-        .groupby("MUNICIPALITY", as_index=False)
-        .agg({
-            "TOTAL_VEHICLE": "sum",
-            "ANTAL_LADD_STATIONER": "sum"
-        })
-    )
-
-    chart = (
-        alt.Chart(df_plot)
-        .mark_circle(size=120)
-        .encode(
-            x=alt.X("TOTAL_VEHICLE:Q", title="Antal elbilar"),
-            y=alt.Y("ANTAL_LADD_STATIONER:Q", title="Antal laddstationer"),
-            tooltip=[
-                "MUNICIPALITY",
-                "TOTAL_VEHICLE",
-                "ANTAL_LADD_STATIONER"
-            ]
-        )
-        .properties(
-            title="Infrastruktur i relation till elbilar (kommunnivå)",
-            height=400
-        )
-    )
-
-    return chart
+  
