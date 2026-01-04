@@ -1,6 +1,8 @@
 [theme]
-base="dark"
-backgroundColor="#0f1a14"
-secondaryBackgroundColor="#23312a"  # gör korten synliga
-textColor="#e6ece8"
-primaryColor="#f2c94c"
+base = "light"
+
+backgroundColor = "#F7FAF9"
+secondaryBackgroundColor = "#FFFFFF"
+
+textColor = "#1F2933"
+primaryColor = "#0F3D2E"

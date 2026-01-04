@@ -1,177 +1,169 @@
 import streamlit as st
+from pathlib import Path
 
-# =========================
-# PAGE CONFIG (MÅSTE VARA FÖRST)
-# =========================
+st.markdown(
+    """
+    <style>
+    /* ===== SIDEBAR ===== */
+    section[data-testid="stSidebar"],
+    section[data-testid="stSidebar"] > div {
+        background-color: #0F3D2E;
+    }
+
+    section[data-testid="stSidebar"] * {
+        color: #E8FFF6;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
+
 st.set_page_config(
     page_title="Laddinfrastruktur i Sverige",
     page_icon="🔌",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
 # =========================
-# GLOBAL CSS
+# SIDEBAR – ORIENTERING
 # =========================
-st.markdown("""
-<style>
 
-/* ===== APP BAKGRUND ===== */
-.stApp {
-    background-color: #DFF5EA;
-}
+with st.sidebar:
+    st.markdown("## 🔌 Laddinfrastruktur i Sverige")
 
-/* ===== TOP BAR / HEADER ===== */
-header[data-testid="stHeader"] {
-    background-color: #DFF5EA;
-    box-shadow: none;
-    border-bottom: none;
-}
+    st.markdown(
+        """
+        En samlad vy över hur Sveriges publika laddinfrastruktur är utbyggd, hur kapacitetsstark den är och hur väl den matchar elbilsflottans storlek
+        """
+    )
 
-header[data-testid="stHeader"] svg {
-    fill: #0F3D2E;
-}
+    st.divider()
 
-header[data-testid="stHeader"] span,
-header[data-testid="stHeader"] button {
-    color: #0F3D2E;
-}
+    st.markdown("### 🎯 Syfte")
+    st.markdown(
+        """
+        • Jämföra laddkapacitet mellan län  
+        • Synliggöra skillnader i laddtyper  
+        • Relatera laddning till elbilsbestånd  
+        """
+    )
 
-/* ===== SIDEBAR (ENDAST VISUELL) ===== */
-section[data-testid="stSidebar"],
-section[data-testid="stSidebar"] > div {
-    background-color: #0F3D2E;
-}
-
-section[data-testid="stSidebar"] * {
-    color: #E8FFF6;
-}
-
-/* ===== CONTENT KPI-KORT ===== */
-.content-kpi {
-    background-color: #0F3D2E;
-    color: #E8FFF6;
-    padding: 1.6rem;
-    border-radius: 18px;
-    min-height: 190px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.18);
-}
-
-.content-kpi h3 {
-    margin-top: 0;
-    font-size: 1.1rem;
-    font-weight: 700;
-}
-
-.content-kpi p {
-    margin-top: 0.6rem;
-    line-height: 1.5;
-    opacity: 0.9;
-}
-
-/* ===== CTA BUTTON ===== */
-button[kind="primary"] {
-    background-color: #0F3D2E !important;
-    color: #FFFFFF !important;
-    border-radius: 12px;
-}
-
-</style>
-""", unsafe_allow_html=True)
-
-# =========================
-# SIDEBAR (TOM MEDVETET)
-# =========================
-st.sidebar.empty()
+    st.divider()
+    st.caption("Dashboard för analys och planering")
 
 # =========================
 # HERO
 # =========================
-st.title("Sveriges laddinfrastruktur")
-st.caption("En kvalitativ översikt av publik laddning i ett elektrifierat samhälle")
+
+st.title("Laddinfrastruktur i Sverige")
+st.caption("Överblick av publik laddning i ett elektrifierat samhälle")
 st.divider()
 
 # =========================
-# RAD 1 – KPI-KORT
+# INTRO
 # =========================
-left, right = st.columns([2, 1], gap="large")
 
-with left:
-    st.markdown("""
-    <div class="content-kpi">
-        <h3>Helhetsbild</h3>
-        <p>
-            En övergripande beskrivning av hur Sveriges publika
-            laddinfrastruktur är uppbyggd och hur den samverkar
-            med elektrifieringen av transportsektorn.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-
-with right:
-    st.markdown("""
-    <div class="content-kpi">
-        <h3>Regionala skillnader</h3>
-        <p>
-            Tillgången till laddning varierar mellan olika delar
-            av landet beroende på befolkningstäthet, resmönster
-            och lokala förutsättningar.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
+st.markdown(
+    """
+    **En samlad vy över hur Sveriges publika laddinfrastruktur är uppbyggd
+    och hur väl den möter efterfrågan från elbilsflottan.**
+    """
+)
+BASE_DIR = Path(__file__).resolve().parents[2]
+ASSETS_DIR = BASE_DIR / "backend" / "assets"
 
 # =========================
-# RAD 2 – KPI-KORT
+# HERO IMAGES – BREDVID VARANDRA
 # =========================
+
+img_col1, img_col2 = st.columns(
+    [1, 1],
+    gap="small"   # <-- VIKTIGT: minimerar avstånd
+)
+
+with img_col1:
+    st.image(
+        str(ASSETS_DIR / "hero_urban_charging_evening.png"),
+        use_container_width=True
+    )
+
+with img_col2:
+    st.image(
+        str(ASSETS_DIR / "urban_charging_row_city.png"),
+        use_container_width=True
+    )
+
+
+
+# =========================
+# SEKTION: ÖVERSIKT
+# =========================
+
+col1, col2 = st.columns(2, gap="large")
+
+with col1:
+    with st.container(border=True):
+        st.subheader("Helhetsbild")
+        st.write(
+            "Nationell översikt av laddinfrastrukturens omfattning, "
+            "fördelning och kapacitet."
+        )
+
+with col2:
+    with st.container(border=True):
+        st.subheader("Regionala skillnader")
+        st.write(
+            "Tillgången till laddning varierar mellan län och kommuner "
+            "beroende på lokala förutsättningar."
+        )
+
+
+# =========================
+# SEKTION: VAD KAN DU ANALYSERA
+# =========================
+
 c1, c2, c3 = st.columns(3, gap="large")
 
 with c1:
-    st.markdown("""
-    <div class="content-kpi">
-        <h3>Elbilsutveckling</h3>
-        <p>
-            Elektrifieringen av fordonsflottan driver behovet av
-            en laddinfrastruktur som är skalbar och långsiktigt hållbar.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
+    with st.container(border=True):
+        st.subheader("Elbilsutveckling")
+        st.write("Antalet elbilar ökar snabbt i hela landet.")
 
 with c2:
-    st.markdown("""
-    <div class="content-kpi">
-        <h3>Laddtyper</h3>
-        <p>
-            Olika laddlösningar fyller olika funktioner, från
-            snabbladdning längs större transportleder till
-            vardagsladdning i närmiljö.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
+    with st.container(border=True):
+        st.subheader("Laddtyper")
+        st.write("Snabbladdning och normalladdning fyller olika behov.")
 
 with c3:
-    st.markdown("""
-    <div class="content-kpi">
-        <h3>Kapacitet</h3>
-        <p>
-            Förhållandet mellan tillgänglig laddkapacitet och
-            efterfrågan är centralt för ett stabilt och tillförlitligt
-            laddnätverk.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
+    with st.container(border=True):
+        st.subheader("Kapacitet")
+        st.write("Hur väl möter infrastrukturen efterfrågan?")
 
-# =========================
-# CTA
-# =========================
 st.divider()
 
-cta_l, cta_c, cta_r = st.columns([1, 2, 1])
+# =========================
+# CTA – STARTA ANALYS
+# =========================
 
-with cta_c:
-    st.subheader("Fördjupa analysen")
-    st.write("Utforska hur laddinfrastrukturen är uppbyggd och utvecklas.")
-    if st.button(
-        "Öppna analysverktyget",
-        use_container_width=True,
-        type="primary"
-    ):
-        st.switch_page("pages/charger_analys_page.py")
+
+cta_col1, cta_col2, cta_col3 = st.columns([1, 2, 1])
+
+with cta_col2:
+    with st.container(border=True):
+        st.write(
+            """
+            Gå vidare till **Charger analysis** för att analysera
+            laddstationer, laddpunkter och kapacitet per län
+            och kommun.
+            """
+        )
+
+        if st.button(
+            "▶ Öppna analysverktyget",
+            use_container_width=True,
+            type="primary"
+        ):
+            st.switch_page("pages/charger_analys_page.py")
