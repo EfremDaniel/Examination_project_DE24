@@ -4,8 +4,6 @@ from frontend.graph.chart_utils import (
     laddstationer_typ_per_kommun_stacked,
     elbil_per_laddpunkt
 )
-
-
 st.markdown(
     """
     <style>
@@ -22,7 +20,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
 # =========================
 # PAGE CONFIG
 # =========================
@@ -37,14 +34,11 @@ st.markdown(
 # HEADER
 # =========================
 
-st.title("⚡ Charger analysis")
-
-st.markdown(
-    """
-    **Interaktiv analys av Sveriges publika laddinfrastruktur.**  
-    Analysen visar hur kommunerna inom ett län bidrar till både
-    omfattning och typ av laddkapacitet.
-    """
+st.title("Charger analysis")
+st.caption(
+    "Interaktiv analys av Sveriges publika laddinfrastruktur. "
+    "Fokus på hur kommunerna inom ett län bidrar till omfattning "
+    "och typ av laddkapacitet."
 )
 
 st.divider()
@@ -60,7 +54,7 @@ df_nr_charger = query_analytics("nr_charger")
 # =========================
 
 with st.container(border=True):
-    st.markdown("### 🔧 Kontrollpanel")
+    st.subheader("Kontrollpanel")
 
     county_options = ["Välj län"] + sorted(df_nr_charger["COUNTY"].unique())
 
@@ -79,34 +73,49 @@ st.divider()
 
 if county != "Välj län":
 
-    st.subheader(f"📊 Sammanfattning – {county}")
+    # -------------------------
+    # SUMMARY
+    # -------------------------
+
+    st.subheader(f"Sammanfattning – {county}")
+    st.caption("Övergripande nyckeltal för länets publika laddinfrastruktur.")
 
     df_nr_charger_county = df_nr_charger[df_nr_charger["COUNTY"] == county]
+
+    total_stationer = df_nr_charger_county["ANTAL_LADD_STATIONER"].sum()
+    laddpunkter = df_nr_charger_county["LADDPUNKTER"].sum()
+    fast = df_nr_charger_county["ANTAL_SNABB_LADD_STATIONER"].sum()
 
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        total_stationer = df_nr_charger_county["ANTAL_LADD_STATIONER"].sum()
-        st.metric("Antal laddstationer", int(total_stationer))
+        st.metric(
+            "Laddstationer",
+            int(total_stationer),
+            help="Totalt antal publika laddstationer i länet."
+        )
 
     with col2:
-        laddpunkter = df_nr_charger_county["LADDPUNKTER"].sum()
-        st.metric("Antal laddpunkter", int(laddpunkter))
+        st.metric(
+            "Laddpunkter",
+            int(laddpunkter),
+            help="Totalt antal laddpunkter kopplade till publika stationer."
+        )
 
     with col3:
-        fast = df_nr_charger_county["ANTAL_SNABB_LADD_STATIONER"].sum()
         st.metric(
-            "Andel snabbladdare",
-            f"{round((fast / total_stationer) * 100, 1)} %"
+            "Snabbladdning",
+            f"{round((fast / total_stationer) * 100, 1)} %",
+            help="Andel laddstationer som erbjuder snabbladdning."
         )
 
     st.divider()
 
-    # =========================
-    # KOMMUNANALYS
-    # =========================
+    # -------------------------
+    # MUNICIPAL ANALYSIS
+    # -------------------------
 
-    st.subheader("🏙️ Kommunernas roll i länets laddinfrastruktur")
+    st.subheader("Kommunernas roll i länets laddinfrastruktur")
 
     st.plotly_chart(
         laddstationer_typ_per_kommun_stacked("nr_charger", county),
@@ -114,37 +123,31 @@ if county != "Välj län":
     )
 
     st.caption(
-        "Staplarna visar både omfattning och typ av laddinfrastruktur per kommun. "
-        "Större kommuner dominerar i volym, medan flera mindre kommuner uppvisar "
-        "en relativt hög andel snabbladdning."
+        "Ett fåtal kommuner står för huvuddelen av länets laddinfrastruktur. "
+        "Samtidigt uppvisar flera mindre kommuner en relativt hög andel "
+        "snabbladdning, vilket tyder på ett fokus på genomfartstrafik "
+        "snarare än destinationsladdning."
     )
 
     st.divider()
 
-    # st.plotly_chart(
-    #     laddpunkter_per_station_bar(df_nr_charger, county),
-    #     use_container_width=True
-    # )
+    # -------------------------
+    # EV VS INFRASTRUCTURE
+    # -------------------------
 
-    # st.caption(
-    #     "Grafen visar hur tät laddinfrastrukturen är i genomsnitt. "
-    #     "Högre värden indikerar stationer med fler laddpunkter."
-    # )
-
-    # st.divider()
-
-    st.subheader("🚗 Infrastruktur i relation till elbilar")
+    st.subheader("Infrastruktur i relation till elbilar")
 
     st.plotly_chart(
         elbil_per_laddpunkt("nr_charger",county),
         theme=None,
-        use_container_width=True
+       use_container_width=True
     )
 
     st.caption(
-        "Relationen mellan antal elbilar och laddstationer per kommun "
-        "indikerar var infrastrukturen är relativt väl- eller underdimensionerad."
+        "Kvoten mellan elbilar och laddpunkter indikerar var efterfrågan "
+        "riskerar att överstiga tillgänglig laddkapacitet. Kommuner med "
+        "hög kvot kan vara prioriterade för framtida investeringar."
     )
 
 else:
-    st.info("⬆️ Välj ett län i kontrollpanelen för att visa analys.")
+    st.info("Välj ett län i kontrollpanelen för att visa analys.")

@@ -20,17 +20,13 @@ def prepare_municipality_df(mart, county):
 
 
 def laddstationer_typ_per_kommun_stacked(mart, county):
-    """
-    Staplad graf som visar vanliga laddstationer och snabbladdare
-    per kommun i valt län (alla kommuner).
-    """
-    
     df_muni = prepare_municipality_df(mart, county)
 
     df_muni["VANLIGA_LADDSTATIONER"] = (
         df_muni["ANTAL_LADD_STATIONER"] - df_muni["ANTAL_SNABB_LADD_STATIONER"]
     )
 
+    # sortera så störst kommun hamnar överst
     df_muni = df_muni.sort_values(
         "ANTAL_LADD_STATIONER", ascending=False
     )
@@ -57,20 +53,66 @@ def laddstationer_typ_per_kommun_stacked(mart, county):
         color="TYP",
         orientation="h",
         barmode="stack",
-        title="Fördelning av laddstationstyper per kommun",
         labels={
-            "ANTAL": "Antal laddstationer",
-            "MUNICIPALITY": "Kommun",
+            "ANTAL": "",
+            "MUNICIPALITY": "",
             "TYP": "Typ av laddning"
         },
         color_discrete_map={
-        "Vanliga laddstationer": "#4E342E",   # mörk grön
-        "Snabbladdstationer": "#F26B1D"}
+            "Vanliga laddstationer": "#4E342E",
+            "Snabbladdstationer": "#F26B1D"
+        },
+        template="simple_white"
     )
 
+    # Axlar
+    fig.update_xaxes(
+        showline=True,
+        linewidth=1,
+        linecolor="rgba(0,0,0,0.3)"
+    )
+    fig.update_yaxes(
+        showline=False,
+        categoryorder="total ascending"  # störst överst
+    )
+
+    # Y-label som annotation
+    fig.add_annotation(
+        text="KOMMUN",
+        font=dict(size=13, color="black", family="Arial"),
+        xref="paper",
+        yref="paper",
+        x=-0.11,
+        y=1.05,
+        xanchor="center",
+        yanchor="top",
+        showarrow=False
+    )
+
+    # X-label som annotation
+    fig.add_annotation(
+        text="ANTAL LADDSTATIONER",
+        font=dict(size=13, color="black", family="Arial"),
+        xref="paper",
+        yref="paper",
+        x=0.18,
+        y=-0.18,
+        xanchor="center",
+        yanchor="bottom",
+        showarrow=False
+    )
+
+    # 🔑 Titel flyttad åt höger
     fig.update_layout(
-        yaxis=dict(autorange="reversed"),
+        title=dict(
+            text="Fördelning av laddstationstyper per kommun",
+            x=0.55,          # justera vid behov
+            y=0.98,
+            xanchor="left",
+            yanchor="top"
+        ),
         legend_title_text="",
+        margin=dict(l=160, b=80, t=100),
         height=35 * df_muni["MUNICIPALITY"].nunique() + 150
     )
 

@@ -37,22 +37,16 @@ with st.sidebar:
 
     st.markdown(
         """
-        En samlad vy över hur Sveriges publika laddinfrastruktur är utbyggd, hur kapacitetsstark den är och hur väl den matchar elbilsflottans storlek
+        Dashboarden ger en samlad analys av hur den publika laddinfrastrukturen är utbyggd och
+        hur dess omfattning och kapacitet varierar mellan olika områden.
+
+        Den visualiserar antal laddstationer, fördelningen mellan snabbladdning och 
+        normalladdning samt genomsnittligt antal laddpunkter per station.
         """
     )
 
     st.divider()
 
-    st.markdown("### 🎯 Syfte")
-    st.markdown(
-        """
-        • Jämföra laddkapacitet mellan län  
-        • Synliggöra skillnader i laddtyper  
-        • Relatera laddning till elbilsbestånd  
-        """
-    )
-
-    st.divider()
     st.caption("Dashboard för analys och planering")
 
 # =========================
@@ -69,8 +63,7 @@ st.divider()
 
 st.markdown(
     """
-    **En samlad vy över hur Sveriges publika laddinfrastruktur är uppbyggd
-    och hur väl den möter efterfrågan från elbilsflottan.**
+    **En samlad vy över Sveriges publika laddare omkring Sverige.**
     """
 )
 BASE_DIR = Path(__file__).resolve().parents[2]
