@@ -122,7 +122,10 @@ schedule_dlt = dg.ScheduleDefinition(
 #                      #
 # ==================== #
 
-# A sensor that will trigger when dlt job is materialized
+# When job_dlt is done with SUCCES, triggers sensor to run job_dbt, 
+# and use dlt-run-id as a run_key to make sure it's not run the same.
+# run_key make sure it's not trigger duplicates.
+# using this because it's three resource in dlt_job.  
 @dg.run_status_sensor(
     run_status=dg.DagsterRunStatus.SUCCESS,
     monitored_jobs=[job_dlt],
