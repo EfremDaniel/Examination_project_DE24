@@ -36,9 +36,14 @@ st.markdown(
 
 st.title("Charger analysis")
 st.caption(
-    "Interaktiv analys av Sveriges publika laddinfrastruktur. "
-    "Fokus på hur kommunerna inom ett län bidrar till omfattning "
-    "och typ av laddkapacitet."
+
+    """
+    Interaktiv analys av Sveriges publika laddinfrastruktur. 
+    Fokus på hur kommunerna inom ett län bidrar till omfattning av laddstationer. 
+    Datan hämtas från Nobil och Trafikanalys. Nobil är en tredjepartsdatabas som samlar in uppgifter från Energimyndigheten.
+
+    """
+
 )
 
 st.divider()

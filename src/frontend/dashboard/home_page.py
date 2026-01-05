@@ -38,7 +38,7 @@ with st.sidebar:
     st.markdown(
         """
         Dashboarden ger en samlad analys av hur den publika laddinfrastrukturen är utbyggd och
-        hur dess omfattning och kapacitet varierar mellan olika områden.
+        hur dess omfattning varierar mellan olika områden.
 
         Den visualiserar antal laddstationer, fördelningen mellan snabbladdning och 
         normalladdning samt genomsnittligt antal laddpunkter per station.
@@ -133,8 +133,8 @@ with c2:
 
 with c3:
     with st.container(border=True):
-        st.subheader("Kapacitet")
-        st.write("Hur väl möter infrastrukturen efterfrågan?")
+        st.subheader("EU:s rekommendation")
+        st.write("Hur länens infrastruktur följer EU:s riktmärke")
 
 st.divider()
 

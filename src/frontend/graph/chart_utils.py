@@ -26,7 +26,6 @@ def laddstationer_typ_per_kommun_stacked(mart, county):
         df_muni["ANTAL_LADD_STATIONER"] - df_muni["ANTAL_SNABB_LADD_STATIONER"]
     )
 
-    # sortera så störst kommun hamnar överst
     df_muni = df_muni.sort_values(
         "ANTAL_LADD_STATIONER", ascending=False
     )
@@ -65,15 +64,42 @@ def laddstationer_typ_per_kommun_stacked(mart, county):
         template="simple_white"
     )
 
+    # Annotering för x-label
+    fig.add_annotation(
+        text= "ANTAL LADDSTATIONER",
+        font= dict(
+            size= 13,
+            color="black",
+            family= "Ariel, sans-serif"
+            ), 
+        xref= "paper",
+        yref= "paper",
+        x= 0.0,
+        y= 0.0,
+        opacity=0.8,
+        xanchor="left",
+        yanchor= "top",
+        yshift= -50,
+        showarrow=False
+    )
+
+
     # Axlar
     fig.update_xaxes(
         showline=True,
         linewidth=1,
-        linecolor="rgba(0,0,0,0.3)"
+        linecolor="rgba(0,0,0,0.3)",
+        title_font=dict(
+            size=13,
+            family="Arial",
+            color="black"   # 🔑 x-label svart
+        ),
+        title_standoff=20
     )
+
     fig.update_yaxes(
         showline=False,
-        categoryorder="total ascending"  # störst överst
+        categoryorder="total ascending"
     )
 
     # Y-label som annotation
@@ -82,34 +108,32 @@ def laddstationer_typ_per_kommun_stacked(mart, county):
         font=dict(size=13, color="black", family="Arial"),
         xref="paper",
         yref="paper",
-        x=-0.11,
-        y=1.05,
+        x=0,
+        y=1,
         xanchor="center",
         yanchor="top",
+        xshift= -50,
+        yshift=30,
+        opacity=0.8,
         showarrow=False
     )
 
-    # X-label som annotation
-    fig.add_annotation(
-        text="ANTAL LADDSTATIONER",
-        font=dict(size=13, color="black", family="Arial"),
-        xref="paper",
-        yref="paper",
-        x=0.18,
-        y=-0.18,
-        xanchor="center",
-        yanchor="bottom",
-        showarrow=False
-    )
-
-    # 🔑 Titel flyttad åt höger
+    # Titel – vänster, men inte för nära y-label
     fig.update_layout(
         title=dict(
             text="Fördelning av laddstationstyper per kommun",
-            x=0.55,          # justera vid behov
-            y=0.98,
+            xref = "paper",
+            yref = "paper",
+            x=0,
+            y=1,
             xanchor="left",
-            yanchor="top"
+            yanchor="top",
+            pad = dict(l=0, t=-50),
+            font=dict(
+                size=15,
+                family="Arial, sans-serif",
+                color= "#292B2F"
+            )
         ),
         legend_title_text="",
         margin=dict(l=160, b=80, t=100),
@@ -206,7 +230,7 @@ def elbil_per_laddpunkt(mart, county):
     # update y- and x-axel and its ticks
     fig.update_xaxes(type="log", tickmode= "array",  tickvals= ticksval_x, ticktext= [str(v) for v in ticksval_x], ticks= "", title_text= "")
     fig.update_xaxes(showline= True, linewidth= 1, linecolor="rgba(0,0,0,0.3)")
-    fig.update_yaxes(type= "log", tickmode= "array", tickvals= ticksval_y, ticktext= [str(v) for v in ticksval_y], ticks= "", title_text= "")
+    fig.update_yaxes(type= "log", tickmode= "array", tickvals= ticksval_y, ticktext= [str(v) for v in ticksval_y], ticks= "",title_text= "")
     fig.update_yaxes(showline= True, linewidth=1, linecolor="rgba(0,0,0,0.3)")
     
 
@@ -227,13 +251,13 @@ def elbil_per_laddpunkt(mart, county):
         yanchor= "top",
         xshift= -110,
         yshift= 40,
-        opacity= 1,
+        opacity= 0.8,
         showarrow=False
     )
 
     # Give title to x-axel
     fig.add_annotation(
-        text= "LADDPUNKTER PER KOMMUN",
+        text= "ANTAL LADDPUNKTER",
         font= dict(
             size= 13,
             color="black",
@@ -243,7 +267,7 @@ def elbil_per_laddpunkt(mart, county):
         yref= "paper",
         x= 0.0,
         y= 0.0,
-        opacity=1,
+        opacity=0.8,
         xanchor="left",
         yanchor= "top",
         yshift= -30,
@@ -264,9 +288,9 @@ def elbil_per_laddpunkt(mart, county):
             xref= "paper",
             pad=dict(l=0),
             font= dict(
-                size= 15,
+                size= 17,
                 family= "Ariel, sans-serif",
-                color= "#8A8F98" 
+                color= "#292B2F" 
             )
             
         ),
