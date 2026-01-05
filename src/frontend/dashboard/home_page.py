@@ -1,6 +1,7 @@
 import streamlit as st
 from pathlib import Path
 
+
 st.markdown(
     """
     <style>
@@ -20,12 +21,12 @@ st.markdown(
 
 
 
-st.set_page_config(
-    page_title="Laddinfrastruktur i Sverige",
-    page_icon="🔌",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
+# st.set_page_config(
+#     page_title="Laddinfrastruktur i Sverige",
+#     page_icon="🔌",
+#     layout="wide",
+#     initial_sidebar_state="expanded"
+# )
 
 # =========================
 # SIDEBAR – ORIENTERING
@@ -166,4 +167,6 @@ with cta_col2:
             use_container_width=True,
             type="primary"
         ):
-            st.switch_page("pages/charger_analys_page.py")
+            st.switch_page("src/frontend/dashboard/charger_analys_page.py")
+
+

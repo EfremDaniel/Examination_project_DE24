@@ -27,11 +27,11 @@ st.markdown(
 # PAGE CONFIG
 # =========================
 
-st.set_page_config(
-    page_title="Charger analysis",
-    page_icon="⚡",
-    layout="wide"
-)
+# st.set_page_config(
+#     page_title="Charger analysis",
+#     page_icon="⚡",
+#     layout="wide"
+# )
 
 # =========================
 # HEADER
@@ -137,6 +137,7 @@ if county != "Välj län":
 
     st.plotly_chart(
         elbil_per_laddpunkt("nr_charger",county),
+        theme=None,
         use_container_width=True
     )
 

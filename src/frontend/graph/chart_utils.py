@@ -137,7 +137,20 @@ def elbil_per_laddpunkt(mart, county):
         color= df_county["MUNICIPALITY"],
         size_max=25,
         opacity=0.6,
-        template="simple_white"
+        template="simple_white",
+        hover_data= {
+            "LADDPUNKTER": ":.0f",
+            "ELBIL_PER_LADDPUNKT": ":.1f",
+            "PROCENT_SNABB": ":.1f",
+            "PROCENT_SNABB_SIZE": False,
+            "MUNICIPALITY": False
+        },
+        labels= {
+            "LADDPUNKTER": "Laddpunkter",
+            "ELBIL_PER_LADDPUNKT": "Elbilar per laddpunkter",
+            "PROCENT_SNABB": "Andel sanbbladdare (%)",
+            "MUNICIPALITY": "Kommun"
+        }
     )
 
 
@@ -165,7 +178,7 @@ def elbil_per_laddpunkt(mart, county):
         ),
         xref= "paper",
         yref= "paper",
-        x= -0.0605,
+        x= -0.07,
         y= 1.10,
         xanchor="center",
         yanchor= "top",
@@ -177,14 +190,14 @@ def elbil_per_laddpunkt(mart, county):
     fig.add_annotation(
         text= "LADDPUNKTER PER KOMMUN",
         font= dict(
-            size= 15,
+            size= 13,
             color="black",
             family= "Ariel"
             ), 
         xref= "paper",
         yref= "paper",
-        x= 0.1,
-        y= -0.18,
+        x= 0.112,
+        y= -0.155,
         opacity=1,
         xanchor="center",
         yanchor= "bottom",
@@ -195,15 +208,20 @@ def elbil_per_laddpunkt(mart, county):
     # update title 
     fig.update_layout(
         title={
-            "text": "Elbil per laddpunkt.<br>" 
-            "Cirkelns storlek bestäms över hur stor procent kommuner snabb laddare.",
+            "text": "Horisontell linje visar EU:s riktmärke för cirka 10 elbilar per laddpunkt.<br>" 
+            "Bubblans storlek motsvara andelen snabbladdare",
             "y": 0.95,
-            "x": 0.11,
+            "x": 0.14,
             "xanchor": "left",
-            "yanchor": "top"
+            "yanchor": "top",
+            "font": {
+                "size": 15,
+                "family": "Ariel, sans-serif",
+                "color": "#8A8F98" 
+            }
             
         },
-        margin= dict(l= 155, b= 70, t= 100)
+        margin= dict(l= 155, b= 70, t= 100),
     )
 
 
