@@ -273,7 +273,5 @@ def elbil_per_laddpunkt(mart, county):
         margin= dict(l= 110, b= 70, t= 100),
     )
 
-
-
     return fig
   
