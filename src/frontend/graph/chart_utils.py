@@ -172,11 +172,11 @@ def elbil_per_laddpunkt(mart, county):
 
     fig = px.scatter(
         df_county,
-        x=df_county["LADDPUNKTER"],
-        y=df_county["ELBIL_PER_LADDPUNKT"],
-        hover_name=df_county["MUNICIPALITY"],
-        size= df_county["PROCENT_SNABB_SIZE"],
-        color= df_county["MUNICIPALITY"],
+        x="LADDPUNKTER",
+        y="ELBIL_PER_LADDPUNKT",
+        hover_name="MUNICIPALITY",
+        size= "PROCENT_SNABB_SIZE",
+        color= "MUNICIPALITY",
         size_max=25,
         opacity=0.6,
         template="simple_white",
@@ -191,7 +191,7 @@ def elbil_per_laddpunkt(mart, county):
             "LADDPUNKTER": "Laddpunkter",
             "ELBIL_PER_LADDPUNKT": "Elbilar per laddpunkter",
             "PROCENT_SNABB": "Andel sanbbladdare (%)",
-            "MUNICIPALITY": "Kommun"
+            "MUNICIPALITY": "Kommuner"
         }
     )
 
@@ -208,22 +208,25 @@ def elbil_per_laddpunkt(mart, county):
     fig.update_xaxes(showline= True, linewidth= 1, linecolor="rgba(0,0,0,0.3)")
     fig.update_yaxes(type= "log", tickmode= "array", tickvals= ticksval_y, ticktext= [str(v) for v in ticksval_y], ticks= "", title_text= "")
     fig.update_yaxes(showline= True, linewidth=1, linecolor="rgba(0,0,0,0.3)")
+    
 
 
     # Give titel to y-axel
     fig.add_annotation(
-        text= "ELBILAR PER LADDPUNKT",
+        text= "ELBILAR PER<br>""LADDPUNKT",
         font= dict(
             size= 13,
             color= "black",
-            family= "Ariel"
+            family= "Ariel, sans-serif"
         ),
         xref= "paper",
         yref= "paper",
-        x= -0.07,
-        y= 1.10,
-        xanchor="center",
+        x= 0.0,
+        y= 1,
+        xanchor="left",
         yanchor= "top",
+        xshift= -110,
+        yshift= 40,
         opacity= 1,
         showarrow=False
     )
@@ -234,36 +237,40 @@ def elbil_per_laddpunkt(mart, county):
         font= dict(
             size= 13,
             color="black",
-            family= "Ariel"
+            family= "Ariel, sans-serif"
             ), 
         xref= "paper",
         yref= "paper",
-        x= 0.112,
-        y= -0.155,
+        x= 0.0,
+        y= 0.0,
         opacity=1,
-        xanchor="center",
-        yanchor= "bottom",
+        xanchor="left",
+        yanchor= "top",
+        yshift= -30,
         showarrow=False
     )
 
+    
 
     # update title 
     fig.update_layout(
-        title={
-            "text": "Horisontell linje visar EU:s riktmärke för cirka 10 elbilar per laddpunkt.<br>" 
+        title=dict(
+            text= "Horisontell linje visar EU:s riktmärke för cirka 10 elbilar per laddpunkt.<br>" 
             "Bubblans storlek motsvara andelen snabbladdare",
-            "y": 0.95,
-            "x": 0.14,
-            "xanchor": "left",
-            "yanchor": "top",
-            "font": {
-                "size": 15,
-                "family": "Ariel, sans-serif",
-                "color": "#8A8F98" 
-            }
+            y= 0.90,
+            x= 0.0,
+            xanchor= "left",
+            yanchor= "top",
+            xref= "paper",
+            pad=dict(l=0),
+            font= dict(
+                size= 15,
+                family= "Ariel, sans-serif",
+                color= "#8A8F98" 
+            )
             
-        },
-        margin= dict(l= 155, b= 70, t= 100),
+        ),
+        margin= dict(l= 110, b= 70, t= 100),
     )
 
 
