@@ -240,8 +240,7 @@ def elbil_per_laddpunkt(mart, county):
     # update title 
     fig.update_layout(
         title=dict(
-            text= "Horisontell linje visar EU:s riktmärke för cirka 10 elbilar per laddpunkt.<br>" 
-            "Bubblans storlek motsvara andelen snabbladdare",
+            text= "Horisontell linje visar EU:s referenspunkt för cirka 10 elbilar per laddpunkt.<br>",
             y= 0.90,
             x= 0.0,
             xanchor= "left",
