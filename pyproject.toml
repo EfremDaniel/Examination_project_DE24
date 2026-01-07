@@ -22,6 +22,7 @@ dependencies = [
     "dbt-snowflake>=1.11.0",
     "matplotlib>=3.10.8",
     "seaborn>=0.13.2",
+    "kaleido>=1.2.0",
 ]
 
 [build-system]
