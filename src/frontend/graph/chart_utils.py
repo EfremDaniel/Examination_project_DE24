@@ -1,7 +1,7 @@
 import plotly_express as px
 from backend.data_processing import query_analytics
 
-
+    
 
 def prepare_municipality_df(mart, county):
     """
@@ -143,42 +143,6 @@ def laddstationer_typ_per_kommun_stacked(mart, county):
     return fig
 
 
-# def laddpunkter_per_station_bar(df, county):
-#     """
-#     Visar genomsnittligt antal laddpunkter per station per kommun.
-#     """
-#     df_muni = prepare_municipality_df(df, county)
-#     df_muni = df_muni[df_muni["ANTAL_LADD_STATIONER"] > 0]
-
-#     df_muni["LADDPUNKTER_PER_STATION"] = (
-#         df_muni["LADDPUNKTER"] /
-#         df_muni["ANTAL_LADD_STATIONER"]
-#     )
-
-#     df_muni = df_muni.sort_values(
-#         "LADDPUNKTER_PER_STATION", ascending=False
-#     )
-
-#     fig = px.bar(
-#         df_muni,
-#         x="LADDPUNKTER_PER_STATION",
-#         y="MUNICIPALITY",
-#         orientation="h",
-#         title="Laddpunkter per station per kommun",
-#         labels={
-#             "LADDPUNKTER_PER_STATION": "Laddpunkter per station",
-#             "MUNICIPALITY": "Kommun"
-#         }
-#     )
-
-#     fig.update_layout(
-#         yaxis=dict(autorange="reversed"),
-#         height=35 * df_muni["MUNICIPALITY"].nunique() + 150
-#     )
-
-#     return fig
-
-
 def elbil_per_laddpunkt(mart, county):
     """Create a scatter plot for how electricities car per charging point.
     It show how many vehicle there is on one charging point."""
@@ -190,25 +154,22 @@ def elbil_per_laddpunkt(mart, county):
     df_county["PROCENT_SNABB"] = round(df_county["ANTAL_SNABB_LADD_STATIONER"] / df_county["ANTAL_LADD_STATIONER"] * 100, 2)
     
     ticksval_x = [1,2,5,10,20,50,100,200,500,1000,2000,5000,10000]
-    ticksval_y = [10, 20, 50, 100]
+    ticksval_y = [5, 10, 15, 20, 30, 50, 100]
 
-    df_county["PROCENT_SNABB_SIZE"] = df_county["PROCENT_SNABB"].clip(lower= 1)
 
     fig = px.scatter(
         df_county,
         x="LADDPUNKTER",
         y="ELBIL_PER_LADDPUNKT",
         hover_name="MUNICIPALITY",
-        size= "PROCENT_SNABB_SIZE",
         color= "MUNICIPALITY",
-        size_max=25,
+        size_max=30,
         opacity=0.6,
-        template="simple_white",
+        template="plotly_white",
         hover_data= {
             "LADDPUNKTER": ":.0f",
             "ELBIL_PER_LADDPUNKT": ":.1f",
             "PROCENT_SNABB": ":.1f",
-            "PROCENT_SNABB_SIZE": False,
             "MUNICIPALITY": False
         },
         labels= {
@@ -227,7 +188,7 @@ def elbil_per_laddpunkt(mart, county):
 
     fig.update_traces(marker=dict(line=dict(width=0)))
 
-    # update y- and x-axel and its ticks
+    # update y- and x-axel
     fig.update_xaxes(type="log", tickmode= "array",  tickvals= ticksval_x, ticktext= [str(v) for v in ticksval_x], ticks= "", title_text= "")
     fig.update_xaxes(showline= True, linewidth= 1, linecolor="rgba(0,0,0,0.3)")
     fig.update_yaxes(type= "log", tickmode= "array", tickvals= ticksval_y, ticktext= [str(v) for v in ticksval_y], ticks= "",title_text= "")

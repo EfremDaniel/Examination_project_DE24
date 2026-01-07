@@ -90,8 +90,9 @@ if county != "Välj län":
     total_stationer = df_nr_charger_county["ANTAL_LADD_STATIONER"].sum()
     laddpunkter = df_nr_charger_county["LADDPUNKTER"].sum()
     fast = df_nr_charger_county["ANTAL_SNABB_LADD_STATIONER"].sum()
+    vehicle = df_nr_charger_county["TOTAL_VEHICLE"].sum()
 
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4 = st.columns(4)
 
     with col1:
         st.metric(
@@ -106,8 +107,15 @@ if county != "Välj län":
             int(laddpunkter),
             help="Totalt antal laddpunkter kopplade till publika stationer."
         )
-
+        
     with col3:
+        st.metric(
+            "Elbilar per laddpunkt",
+            f"{round(vehicle/laddpunkter, 2)}",
+            help="Bra riktmärke 10 elbilar per laddpunkt"
+        )
+
+    with col4:
         st.metric(
             "Snabbladdning",
             f"{round((fast / total_stationer) * 100, 1)} %",

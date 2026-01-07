@@ -19,8 +19,10 @@ This project include data collection, processing and structure data into a unifi
 - Run dashboard
 
 ***To install dependencies:***
+
+run in terminal:
 ```
-uv add
+uv sync
 ```
 
 ***Dependencies:***
@@ -80,23 +82,31 @@ dbt_snowflake:
 This project you need to run 2 DLT script before orchestration. Navigate to src/data_extract, run this:
 
 ***Extract data dump (only need to run once)*** 
+
+run in terminal:
 ```
 uv run extract_data_dump.py
 ```
 
 ***Extract trafikanalys*** 
+
+run in terminal:
 ```
 uv run dlt_trafikanalys.py
 ``` 
 
 #### Data transformation
-Before orchestration, navigate to src/data_transform and run:
+Before orchestration, navigate to src/data_transform.
+
+run in terminal:
 ```
 uv run dbt deps
 ```
 
 #### Orchestration
 To automate data pipeline for ingestion and transformation with Dagster orchestration. Add .dlt to the orchestration folder: orchestration/.dlt/secrets.toml
+
+run in terminal
 ```
 uv run dagster dev -f definition.py
 ```
