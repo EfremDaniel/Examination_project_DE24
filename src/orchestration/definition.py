@@ -14,8 +14,6 @@ from data_extract.extract_data_update import nobil_source
 from pathlib import Path
 
 
-# path to duckdb
-# db_path = str(Path(__file__).parents[1] / "data_warehouse/data.duckdb")
 
 # This create a Dagster resource
 dlt_resource = DagsterDltResource()
@@ -122,10 +120,9 @@ schedule_dlt = dg.ScheduleDefinition(
 #                      #
 # ==================== #
 
-# When job_dlt is done with SUCCES, triggers sensor to run job_dbt, 
-# and use dlt-run-id as a run_key to make sure it's not run the same.
-# run_key make sure it's not trigger duplicates.
-# using this because it's three resource in dlt_job.  
+# When job_dlt completes successfully, trigger job_dbt.
+# The run_key is set to the triggering dlt run_id to make the request idempotent,
+# preventing duplicate dbt runs for the same completed dlt run across sensor evaluations.
 @dg.run_status_sensor(
     run_status=dg.DagsterRunStatus.SUCCESS,
     monitored_jobs=[job_dlt],
